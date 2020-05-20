@@ -122,7 +122,7 @@ let vm = new Vue({
                 .style("font-family", "Microsoft JhengHei")
                 .style("padding", "5px")
                 .style("left", "10%")
-                .style("top", "60%")
+                .style("bottom", "30%")
 
             dropdownButton
                 .selectAll("myOptions")
@@ -154,7 +154,7 @@ let vm = new Vue({
                     d3.select("p#value-time").text(d3.timeFormat("%Y")(val))
                 })
 
-            d3.select("div.row_align-items-center").style("position", "absolute").style("left", "10%").style("top", "70%")
+            d3.select("div.row_align-items-center").style("position", "absolute").style("left", "10%").style("bottom", "10%")
 
             var gTime = d3
                 .select("div#slider-time")
