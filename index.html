@@ -2,23 +2,28 @@
 <html>
     <head>
         <meta charset="UTF-8" />
-
+        <meta name="viewport" content="width=device-width" />
         <link rel="stylesheet" href="./style.css" />
     </head>
     <body>
         <!-- partial:index.partial.html -->
         <div id="map">
-            <svg width="1000" height="800">
+            <svg width="1000" height="800" style="border: 2px ">
                 <g class="counties"></g>
                 <path class="county-borders"></path>
                 <g class="mountain"></g>
             </svg>
         </div>
         <div class="drop_down_button"></div>
+        <div class="row_align-items-center">
+            <div class="col-sm-2"><p id="value-time"></p></div>
+            <div class="col-sm"><div id="slider-time"></div></div>
+        </div>
         <!-- partial -->
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
         <script src="https://d3js.org/d3.v5.min.js"></script>
         <script src="https://unpkg.com/topojson@3"></script>
+        <script src="https://unpkg.com/d3-simple-slider"></script>
         <script src="./script.js"></script>
     </body>
 </html>
