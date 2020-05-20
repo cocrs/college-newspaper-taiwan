@@ -1,0 +1,41 @@
+body {
+    text-align: center;
+}
+svg{
+    background-color: #e9edff;
+}
+.counties {
+    fill: #4ed360;
+}
+.mountain {
+    stroke: rgb(177, 189, 241);
+}
+.counties :hover {
+    fill: #6cbba7;
+    transition: 0.5s;
+}
+.county-borders {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 0.5px;
+}
+/* rent site */
+.stop-top-rentsite {
+    stop-color: #6695fc; /* Indigo */
+}
+.stop-bottom-rentsite {
+    stop-color: #ffffff; /* Teal */
+}
+.filled-rentsite {
+    fill: url(#rentSiteGradient);
+}
+/* real */
+.stop-top-real {
+    stop-color: #f55491; /* Indigo */
+}
+.stop-bottom-real {
+    stop-color: #ffffff; /* Teal */
+}
+.filled-real {
+    fill: url(#realGradient);
+}

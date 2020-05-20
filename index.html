@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>CodePen - D3.js Map in Vue.js</title>
+        <link rel="stylesheet" href="./style.css" />
+    </head>
+    <body>
+        <!-- partial:index.partial.html -->
+        <div id="app">
+            <svg width="1000" height="800" style="border: 1px solid #00000060;">
+                <g class="counties"></g>
+                <path class="county-borders"></path>
+                <g class="mountain"></g>
+            </svg>
+        </div>
+        <!-- partial -->
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://d3js.org/d3.v5.min.js"></script>
+        <script src="https://unpkg.com/topojson@3"></script>
+        <script src="./script.js"></script>
+    </body>
+</html>
