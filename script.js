@@ -1,5 +1,5 @@
 let vm = new Vue({
-    el: "#app",
+    el: "#map",
     data: {
         taiwanCountry: [],
     },
@@ -8,12 +8,13 @@ let vm = new Vue({
             .then((res) => res.json())
             .then((result) => {
                 this.taiwanCountry = result
-                this.draw(this.taiwanCountry)
+                this.draw_map(this.taiwanCountry)
+                this.draw_mountain(this.taiwanCountry)
+                this.drop_down_button(this.taiwanCountry)
             })
     },
     methods: {
-        draw(mapData) {
-            let svg = d3.select("svg")
+        draw_map(mapData) {
             let projection = d3.geoMercator().center([120.5, 25]).scale(8500)
             let path = d3.geoPath(projection)
 
@@ -32,6 +33,12 @@ let vm = new Vue({
                     })
                 )
             )
+        },
+        draw_mountain(mapData) {
+            let svg = d3.select("svg")
+            let projection = d3.geoMercator().center([120.5, 25]).scale(8500)
+            let path = d3.geoPath(projection)
+
             let cityFeatures = topojson.feature(mapData, mapData.objects["COUNTY_MOI_1081121"]).features
 
             var svgDefsRentSite = svg.append("defs")
@@ -83,21 +90,7 @@ let vm = new Vue({
                 })
                 .classed("filled-rentsite", true)
 
-            let tooltip = d3
-                .select("body")
-                .append("div")
-                .attr("class", "tooltip")
-                .style("background-color", "white")
-                .style("border", "solid")
-                .style("position", "center")
-                .style("padding", "4px")
-                .style("border-width", "2px")
-                .style("border-radius", "3px")
-                .style("display", "block")
-                .style("position", "absolute")
-                .style("text-align", "center")
-                .style("font-family", "Microsoft JhengHei")
-                .style("font-size", "15px")
+            let tooltip = d3.select("body").append("div").attr("class", "tooltip")
 
             mountain
                 .selectAll("path")
@@ -116,32 +109,32 @@ let vm = new Vue({
                 .on("mouseout", function () {
                     tooltip.style("visibility", "hidden")
                 })
+        },
+        drop_down_button(mapData) {
 
-            // mountain
-            //     .selectAll("text")
-            //     .data(cityFeatures)
-            //     .enter()
-            //     .append("text")
-            //     .attr("x", function (d) {
-            //         return path.centroid(d)[0]
-            //     })
-            //     .attr("y", function (d) {
-            //         return path.centroid(d)[1]
-            //     })
-            //     .attr("text-anchor", "middle")
-            //     .attr("font-size", "10px")
-            //     .text((d) => {
-            //         return d.properties.COUNTYNAME
-            //     })
-            // mountain
-            //     .selectAll("path")
-            //     .data(data)
-            //     .enter()
-            //     .append("path")
-            //     .classed("filled", true)
-            //     .attr("d", (d) => {
-            //         return lineGenerator(d)
-            //     })
+            var dropdownButton = d3
+                .select("div.drop_down_button")
+                .append("select")
+                .style("font-size", "20px")
+                .style("position", "absolute")
+                .style("border-radius", "3px")
+                .style("border-width", "3px")
+                .style("font-family", "Microsoft JhengHei")
+                .style("padding", "5px")
+                .style("right", "20%")
+                .style("top", "30%")
+
+            dropdownButton
+                .selectAll("myOptions")
+                .data(topojson.feature(mapData, mapData.objects["COUNTY_MOI_1081121"]).features)
+                .enter()
+                .append("option")
+                .text(function (d) {
+                    return d.properties.COUNTYNAME
+                })
+                .attr("value", function (d) {
+                    return d.properties.COUNTYNAME
+                })
         },
     },
 })
