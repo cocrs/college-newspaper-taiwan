@@ -3,7 +3,13 @@ let vm = new Vue({
     data: {
         taiwanCountry: [],
         rentSiteData: [],
+        rentSiteSum: [],
         realData: [],
+        realSum: [],
+        mountain: [],
+        curData: [],
+        curYear: [],
+        max: [],
     },
     mounted() {
         fetch("./COUNTY_MOI_1081121.json", { mode: "no-cors" })
@@ -12,7 +18,6 @@ let vm = new Vue({
                 this.taiwanCountry = result
                 this.draw_map(this.taiwanCountry)
                 this.drop_down_button(this.taiwanCountry)
-                this.slider()
                 fetch("./data/output591Merged.json", { mode: "no-cors" })
                     .then((res) => res.json())
                     .then((result) => {
@@ -29,16 +34,73 @@ let vm = new Vue({
                             })
                         ).then((value) => {
                             this.realData = value
-                            // value.forEach((counts, i) =>{
-                            //     realData[i] =
-                            // })
-
                             this.draw_mountain(this.taiwanCountry, this.rentSiteData, this.realData)
+                            this.slider(this.taiwanCountry)
+                            this.button(this.taiwanCountry)
                         })
                     })
             })
     },
     methods: {
+        update(mapData) {
+            let projection = d3.geoMercator().center([120, 25]).scale(8500)
+            let path = d3.geoPath(projection)
+            let cityFeatures = topojson.feature(mapData, mapData.objects["COUNTY_MOI_1081121"]).features
+            var lineGenerator = d3.line()
+            let linear = d3.scaleLinear().range([0, 200]).domain([0, this.max])
+
+            this.mountain
+                .selectAll("path")
+                .data(cityFeatures)
+                .transition()
+                .duration(2000)
+                .attr("d", (d) => {
+                    var dx = 0
+                    var dy = 0
+                    if (d.properties.COUNTYNAME == "新北市") {
+                        dy += 15
+                    }
+                    if (d.properties.COUNTYNAME == "嘉義縣") {
+                        dx += 15
+                    }
+                    if (d.properties.COUNTYNAME == "苗栗縣") {
+                        dx += 10
+                    }
+                    //console.log(d.properties.COUNTYNAME, this.curData[d.properties.COUNTYNAME])
+                    height = linear(this.curData[d.properties.COUNTYNAME].counts[this.curYear])
+
+                    var center = path.centroid(d)
+                    var left = [center[0] - 4 + dx, center[1] + dy]
+                    var right = [center[0] + 4 + dx, center[1] + dy]
+                    var top = [center[0] + dx, center[1] - height + dy]
+
+                    return lineGenerator([left, top, right])
+                })
+
+            this.mountain
+                .selectAll("text")
+                .data(cityFeatures)
+                .transition()
+                .duration(2000)
+                .attr("x", function (d) {
+                    var dx = 0
+                    return path.centroid(d)[0] + dx
+                })
+                .attr("y", function (d) {
+                    height = linear(vm.curData[d.properties.COUNTYNAME].counts[vm.curYear])
+                    var dy = -5
+                    if (d.properties.COUNTYNAME == "新北市") {
+                        dy += 15
+                    }
+                    return path.centroid(d)[1] - height + dy
+                })
+                .text((d) => {
+                    if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(d.properties.COUNTYNAME)) {
+                        return d.properties.COUNTYNAME + this.curData[d.properties.COUNTYNAME].counts[this.curYear]
+                    }
+                    return ""
+                })
+        },
         draw_map(mapData) {
             let projection = d3.geoMercator().center([120, 25]).scale(8500)
             let path = d3.geoPath(projection)
@@ -60,37 +122,39 @@ let vm = new Vue({
             )
         },
         draw_mountain(mapData, rentSiteData, realData) {
-            var rentSiteSum = {}
+            this.rentSiteSum = {}
             for (key in rentSiteData) {
                 let cur = rentSiteData[key]
-                if (cur.city in rentSiteSum) {
-                    for (key2 in rentSiteSum[cur.city].counts) {
-                        rentSiteSum[cur.city].counts[key2] += cur.counts[key2]
+
+                if (cur.city in this.rentSiteSum) {
+                    for (key2 in cur.counts) {
+                        if (key2 in this.rentSiteSum[cur.city].counts) this.rentSiteSum[cur.city].counts[key2] += cur.counts[key2]
+                        else this.rentSiteSum[cur.city].counts[key2] = cur.counts[key2]
                     }
                 } else {
-                    rentSiteSum[cur.city] = { counts: cur.counts }
+                    this.rentSiteSum[cur.city] = { counts: cur.counts }
                 }
             }
-            console.log(rentSiteSum)
+            console.log(this.rentSiteSum)
 
-            var realSum = {}
+            this.realSum = {}
             realData.forEach((year, index) => {
                 var flag = 0
                 year.forEach((cur) => {
-                    if (typeof realSum[cur.city] == "undefined") {
-                        realSum[cur.city] = { counts: {} }
-                        realSum[cur.city].counts[index + 2016] = 0
+                    if (typeof this.realSum[cur.city] == "undefined") {
+                        this.realSum[cur.city] = { counts: {} }
+                        this.realSum[cur.city].counts[index + 2016] = 0
                     }
-                    if(flag == 0){
-                        for(key in realSum){
-                            realSum[key].counts[index + 2016] = 0
+                    if (flag == 0) {
+                        for (key in this.realSum) {
+                            this.realSum[key].counts[index + 2016] = 0
                         }
                         flag = 1
                     }
-                    realSum[cur.city].counts[index + 2016] += parseInt(cur.value)
+                    this.realSum[cur.city].counts[index + 2016] += parseInt(cur.value)
                 })
             })
-            console.log(realSum)
+            console.log(this.realSum)
 
             let svg = d3.select("svg")
             let projection = d3.geoMercator().center([120, 25]).scale(8500)
@@ -122,13 +186,31 @@ let vm = new Vue({
 
             var lineGenerator = d3.line()
 
-            let mountain = d3.select("g.mountain")
+            this.mountain = d3.select("g.mountain")
 
-            mountain
+            // select data
+            this.curData = this.rentSiteSum
+            this.curYear = 2016
+
+            var rentSiteMax = 0
+            for (key in this.rentSiteSum) {
+                for (key2 in this.rentSiteSum[key].counts) {
+                    if (this.rentSiteSum[key].counts[key2] > rentSiteMax) {
+                        rentSiteMax = this.rentSiteSum[key].counts[key2]
+                    }
+                }
+            }
+
+            this.max = rentSiteMax
+
+            let linear = d3.scaleLinear().range([0, 150]).domain([0, this.max])
+
+            this.mountain
                 .selectAll("path")
                 .data(cityFeatures)
                 .enter()
                 .append("path")
+                .classed("filled-rentsite", true)
                 .attr("d", (d) => {
                     var dx = 0
                     var dy = 0
@@ -138,22 +220,81 @@ let vm = new Vue({
                     if (d.properties.COUNTYNAME == "嘉義縣") {
                         dx += 15
                     }
+                    if (d.properties.COUNTYNAME == "苗栗縣") {
+                        dx += 10
+                    }
+                    //console.log(height)
                     var center = path.centroid(d)
                     var left = [center[0] - 4 + dx, center[1] + dy]
                     var right = [center[0] + 4 + dx, center[1] + dy]
-                    var top = [center[0] + dx, center[1] - (~~(Math.random() * 30) + 10) + dy]
+                    var top = [center[0] + dx, center[1] + dy]
 
                     return lineGenerator([left, top, right])
                 })
-                .classed("filled-rentsite", true)
+
+            this.mountain
+                .selectAll("path")
+                .data(cityFeatures)
+                .transition()
+                .duration(1000)
+                .attr("d", (d) => {
+                    var dx = 0
+                    var dy = 0
+                    if (d.properties.COUNTYNAME == "新北市") {
+                        dy += 15
+                    }
+                    if (d.properties.COUNTYNAME == "嘉義縣") {
+                        dx += 15
+                    }
+                    if (d.properties.COUNTYNAME == "苗栗縣") {
+                        dx += 10
+                    }
+
+                    height = linear(this.curData[d.properties.COUNTYNAME].counts[this.curYear])
+
+                    //console.log(height)
+                    var center = path.centroid(d)
+                    var left = [center[0] - 4 + dx, center[1] + dy]
+                    var right = [center[0] + 4 + dx, center[1] + dy]
+                    var top = [center[0] + dx, center[1] - height + dy]
+
+                    return lineGenerator([left, top, right])
+                })
+
+            this.mountain
+                .selectAll("text")
+                .data(cityFeatures)
+                .enter()
+                .append("text")
+                .attr("x", function (d) {
+                    var dx = 0
+                    return path.centroid(d)[0] + dx
+                })
+                .attr("y", function (d) {
+                    height = linear(vm.curData[d.properties.COUNTYNAME].counts[vm.curYear])
+                    var dy = -5
+                    if (d.properties.COUNTYNAME == "新北市") {
+                        dy += 15
+                    }
+                    return path.centroid(d)[1] - height + dy
+                })
+                .attr("text-anchor", "middle")
+                .attr("font-size", "14px")
+                .style("stroke", "black")
+                .text((d) => {
+                    if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(d.properties.COUNTYNAME)) {
+                        return d.properties.COUNTYNAME + " " + this.curData[d.properties.COUNTYNAME].counts[this.curYear]
+                    }
+                    return ""
+                })
 
             let tooltip = d3.select("body").append("div").attr("class", "tooltip")
 
-            mountain
+            this.mountain
                 .selectAll("path")
                 .on("mouseover", function () {
                     d3.select(this).attr("city", function (d) {
-                        label = d.properties.COUNTYNAME
+                        label = d.properties.COUNTYNAME + "</br>成交量：" + vm.curData[d.properties.COUNTYNAME].counts[vm.curYear]
                     })
                 })
                 .on("mousemove", function () {
@@ -168,6 +309,12 @@ let vm = new Vue({
                 })
         },
         drop_down_button(mapData) {
+            let projection = d3.geoMercator().center([120, 25]).scale(8500)
+            let path = d3.geoPath(projection)
+            let cityFeatures = topojson.feature(mapData, mapData.objects["COUNTY_MOI_1081121"]).features
+            var lineGenerator = d3.line()
+            let sixCity = ["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"]
+
             var dropdownButton = d3
                 .select("div.drop_down_button")
                 .append("select")
@@ -182,19 +329,25 @@ let vm = new Vue({
 
             dropdownButton
                 .selectAll("myOptions")
-                .data(topojson.feature(mapData, mapData.objects["COUNTY_MOI_1081121"]).features)
+                .data(sixCity)
                 .enter()
                 .append("option")
                 .text(function (d) {
-                    return d.properties.COUNTYNAME
+                    return d
                 })
                 .attr("value", function (d) {
-                    return d.properties.COUNTYNAME
+                    return d
+                })
+                .on("change", function (d) {
+                    // recover the option that has been chosen
+                    var selectedOption = d3.select(this).property("value")
+                    console.log(selectedOption)
+                    // run the updateChart function with this selected option
                 })
         },
-        slider() {
-            var dataTime = d3.range(0, 10).map(function (d) {
-                return new Date(2011 + d, 10, 3)
+        slider(mapData) {
+            var dataTime = d3.range(0, 4).map(function (d) {
+                return new Date(2016 + d, 1, 1)
             })
 
             var sliderTime = d3
@@ -205,9 +358,12 @@ let vm = new Vue({
                 .width(300)
                 .tickFormat(d3.timeFormat("%Y"))
                 .tickValues(dataTime)
-                .default(new Date(2011, 10, 3))
+                .default(new Date(2011, 1, 1))
                 .on("onchange", (val) => {
                     d3.select("p#value-time").text(d3.timeFormat("%Y")(val))
+                    // console.log(d3.timeFormat("%Y")(val))
+                    this.curYear = d3.timeFormat("%Y")(val)
+                    this.update(mapData)
                 })
 
             d3.select("div.row_align-items-center").style("position", "absolute").style("left", "150px").style("bottom", "100px")
@@ -223,6 +379,32 @@ let vm = new Vue({
             gTime.call(sliderTime)
 
             d3.select("p#value-time").text(d3.timeFormat("%Y")(sliderTime.value()))
+        },
+        button(mapData) {
+            var button = d3.select("div.button_div")
+
+            button
+                .append("button")
+                .text("租屋網") 
+                .classed("button", true)
+                .style("left", "150px")    
+                .style("top", "100px")
+                .on("click", () => {
+                    this.curData = this.rentSiteSum
+                    this.update(mapData)
+                })
+            
+            button
+                .append("button")
+                .text("實價登錄")
+                .classed("button", true)
+                .style("left", "270px")    
+                .style("top", "100px")
+                .on("click", () => {
+                    this.curData = this.realSum
+                    this.update(mapData)
+                })
+
         },
     },
 })

@@ -1,11 +1,12 @@
-body{
+body {
     background-color: #bfd7f5;
+    font-family: Microsoft JhengHei;
 }
 #map {
     text-align: center;
 }
 .counties {
-    fill: #9b9b9b;
+    fill: #b3b3b3;
 }
 .mountain {
     stroke: rgb(125, 147, 245);
@@ -19,8 +20,34 @@ body{
     stroke: #fff;
     stroke-width: 0.5px;
 }
+.button {
+    display: inline-block;
+    padding: 15px 25px;
+    font-size: 18px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #a874d8;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px rgb(136, 98, 158);
+    position: absolute;
+    font-family: Microsoft JhengHei;
+}
 
-.tooltip{
+.button:hover {
+    background-color: rgb(151, 111, 190);
+}
+
+.button:active {
+    background-color: #8850bd;
+    box-shadow: 0 5px rgb(98, 62, 119);
+    transform: translateY(4px);
+}
+
+.tooltip {
     background-color: white;
     border: solid;
     position: center;
