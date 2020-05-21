@@ -2,6 +2,8 @@ let vm = new Vue({
     el: "#map",
     data: {
         taiwanCountry: [],
+        rentSiteData: [],
+        realData: [],
     },
     mounted() {
         fetch("./COUNTY_MOI_1081121.json", { mode: "no-cors" })
@@ -9,14 +11,36 @@ let vm = new Vue({
             .then((result) => {
                 this.taiwanCountry = result
                 this.draw_map(this.taiwanCountry)
-                this.draw_mountain(this.taiwanCountry)
                 this.drop_down_button(this.taiwanCountry)
                 this.slider()
+                fetch("./data/output591Merged.json", { mode: "no-cors" })
+                    .then((res) => res.json())
+                    .then((result) => {
+                        this.rentSiteData = result
+                        Promise.all(
+                            ["./data/105.csv", "./data/106.csv", "./data/107.csv", "./data/108.csv", "./data/109.csv"].map(function (url) {
+                                return fetch(url)
+                                    .then(function (response) {
+                                        return response.ok ? response.text() : Promise.reject(response.status)
+                                    })
+                                    .then(function (text) {
+                                        return d3.csvParse(text)
+                                    })
+                            })
+                        ).then((value) => {
+                            this.realData = value
+                            // value.forEach((counts, i) =>{
+                            //     realData[i] =
+                            // })
+
+                            this.draw_mountain(this.taiwanCountry, this.rentSiteData, this.realData)
+                        })
+                    })
             })
     },
     methods: {
         draw_map(mapData) {
-            let projection = d3.geoMercator().center([120.5, 25]).scale(8500)
+            let projection = d3.geoMercator().center([120, 25]).scale(8500)
             let path = d3.geoPath(projection)
 
             d3.select("g.counties")
@@ -35,9 +59,41 @@ let vm = new Vue({
                 )
             )
         },
-        draw_mountain(mapData) {
+        draw_mountain(mapData, rentSiteData, realData) {
+            var rentSiteSum = {}
+            for (key in rentSiteData) {
+                let cur = rentSiteData[key]
+                if (cur.city in rentSiteSum) {
+                    for (key2 in rentSiteSum[cur.city].counts) {
+                        rentSiteSum[cur.city].counts[key2] += cur.counts[key2]
+                    }
+                } else {
+                    rentSiteSum[cur.city] = { counts: cur.counts }
+                }
+            }
+            console.log(rentSiteSum)
+
+            var realSum = {}
+            realData.forEach((year, index) => {
+                var flag = 0
+                year.forEach((cur) => {
+                    if (typeof realSum[cur.city] == "undefined") {
+                        realSum[cur.city] = { counts: {} }
+                        realSum[cur.city].counts[index + 2016] = 0
+                    }
+                    if(flag == 0){
+                        for(key in realSum){
+                            realSum[key].counts[index + 2016] = 0
+                        }
+                        flag = 1
+                    }
+                    realSum[cur.city].counts[index + 2016] += parseInt(cur.value)
+                })
+            })
+            console.log(realSum)
+
             let svg = d3.select("svg")
-            let projection = d3.geoMercator().center([120.5, 25]).scale(8500)
+            let projection = d3.geoMercator().center([120, 25]).scale(8500)
             let path = d3.geoPath(projection)
 
             let cityFeatures = topojson.feature(mapData, mapData.objects["COUNTY_MOI_1081121"]).features
@@ -121,8 +177,8 @@ let vm = new Vue({
                 .style("border-width", "3px")
                 .style("font-family", "Microsoft JhengHei")
                 .style("padding", "5px")
-                .style("left", "10%")
-                .style("bottom", "30%")
+                .style("left", "150px")
+                .style("bottom", "300px")
 
             dropdownButton
                 .selectAll("myOptions")
@@ -149,12 +205,12 @@ let vm = new Vue({
                 .width(300)
                 .tickFormat(d3.timeFormat("%Y"))
                 .tickValues(dataTime)
-                .default(new Date(2020, 10, 3))
+                .default(new Date(2011, 10, 3))
                 .on("onchange", (val) => {
                     d3.select("p#value-time").text(d3.timeFormat("%Y")(val))
                 })
 
-            d3.select("div.row_align-items-center").style("position", "absolute").style("left", "10%").style("bottom", "10%")
+            d3.select("div.row_align-items-center").style("position", "absolute").style("left", "150px").style("bottom", "100px")
 
             var gTime = d3
                 .select("div#slider-time")

@@ -1,17 +1,17 @@
 body{
-    background-color: #e9edff;
+    background-color: #bfd7f5;
 }
 #map {
     text-align: center;
 }
 .counties {
-    fill: #4ed360;
+    fill: #9b9b9b;
 }
 .mountain {
-    stroke: rgb(177, 189, 241);
+    stroke: rgb(125, 147, 245);
 }
 .counties :hover {
-    fill: #6cbba7;
+    fill: #797979;
     transition: 0.5s;
 }
 .county-borders {
@@ -36,7 +36,7 @@ body{
 
 /* rent site */
 .stop-top-rentsite {
-    stop-color: #6695fc; /* Indigo */
+    stop-color: #3d7aff; /* Indigo */
 }
 .stop-bottom-rentsite {
     stop-color: #ffffff; /* Teal */
