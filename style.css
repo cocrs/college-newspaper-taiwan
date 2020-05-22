@@ -20,8 +20,9 @@ body {
     stroke: #fff;
     stroke-width: 0.5px;
 }
-.button_div{
-    margin-top: -700px;
+.button_div {
+    margin-top: -227px;
+    margin-left: 284px;
 }
 .button {
     position: relative;

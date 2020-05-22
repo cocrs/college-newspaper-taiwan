@@ -84,6 +84,21 @@ let vm = new Vue({
                 .duration(2000)
                 .attr("x", function (d) {
                     var dx = 0
+                    if (d.properties.COUNTYNAME == "新北市") {
+                        dx += 40
+                    }
+                    if (d.properties.COUNTYNAME == "臺北市") {
+                        dx -= 40
+                    }
+                    if (d.properties.COUNTYNAME == "臺南市") {
+                        dx -= 25
+                    }
+                    if (d.properties.COUNTYNAME == "高雄市") {
+                        dx += 25
+                    }
+                    if (d.properties.COUNTYNAME == "桃園市") {
+                        dx -= 15
+                    }
                     return path.centroid(d)[0] + dx
                 })
                 .attr("y", function (d) {
@@ -105,7 +120,7 @@ let vm = new Vue({
             let cityFeatures = topojson.feature(mapData, mapData.objects["COUNTY_MOI_1081121"]).features
             let projection = d3.geoMercator().center([118, 25]).scale(8500)
             let path = d3.geoPath(projection)
-            
+
             d3.select("g.counties")
                 .selectAll("path")
                 .data(topojson.feature(mapData, mapData.objects["COUNTY_MOI_1081121"]).features)
@@ -121,11 +136,11 @@ let vm = new Vue({
                     })
                 )
             )
-                    
+
             const zoom = d3.zoom().scaleExtent([1, 40]).on("zoom", zoomed)
-            
+
             svg = d3.select("svg").on("click", reset)
-            
+
             counties = d3.select("g.counties")
             mountains = d3.select("g.mountain")
             borders = d3.select("path.county-borders")
@@ -151,7 +166,7 @@ let vm = new Vue({
             //                 .translate(-x, -y)
             //         )
             // }
-            var width = 0, height =  0;
+            var width = 0, height = 0;
             function reset() {
                 svg.transition()
                     .duration(750)
@@ -285,6 +300,21 @@ let vm = new Vue({
                 .append("text")
                 .attr("x", function (d) {
                     var dx = 0
+                    if (d.properties.COUNTYNAME == "新北市") {
+                        dx += 40
+                    }
+                    if (d.properties.COUNTYNAME == "臺北市") {
+                        dx -= 40
+                    }
+                    if (d.properties.COUNTYNAME == "臺南市") {
+                        dx -= 25
+                    }
+                    if (d.properties.COUNTYNAME == "高雄市") {
+                        dx += 25
+                    }
+                    if (d.properties.COUNTYNAME == "桃園市") {
+                        dx -= 15
+                    }
                     return path.centroid(d)[0] + dx
                 })
                 .attr("y", function (d) {
@@ -372,12 +402,12 @@ let vm = new Vue({
                 .min(d3.min(dataTime))
                 .max(d3.max(dataTime))
                 .step(1000 * 60 * 60 * 24 * 365)
-                .width(300)
+                .width(200)
                 .tickFormat(d3.timeFormat("%Y"))
                 .tickValues(dataTime)
                 .default(new Date(2011, 1, 1))
                 .on("onchange", (val) => {
-                    d3.select("p#value-time").text(d3.timeFormat("%Y")(val))
+                    d3.select("h1#value-time").text(d3.timeFormat("%Y")(val))
                     // console.log(d3.timeFormat("%Y")(val))
                     this.curYear = d3.timeFormat("%Y")(val)
                     this.update(mapData)
@@ -388,14 +418,14 @@ let vm = new Vue({
             var gTime = d3
                 .select("div#slider-time")
                 .append("svg")
-                .attr("width", 500)
+                .attr("width", 250)
                 .attr("height", 100)
                 .append("g")
                 .attr("transform", "translate(30,30)")
 
             gTime.call(sliderTime)
 
-            d3.select("p#value-time").text(d3.timeFormat("%Y")(sliderTime.value()))
+            d3.select("h1#value-time").text(d3.timeFormat("%Y")(sliderTime.value()))
         },
         button(mapData) {
             var button = d3.select("div.button_div")
@@ -425,6 +455,6 @@ let vm = new Vue({
                     button.select("#rent").classed("active", false)
                 })
         },
-        zoom() {},
+        zoom() { },
     },
 })
