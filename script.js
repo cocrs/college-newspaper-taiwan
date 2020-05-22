@@ -36,7 +36,7 @@ let vm = new Vue({
                         ).then((value) => {
                             this.realData = value
                             this.draw_mountain(this.taiwanCountry, this.rentSiteData, this.realData)
-                            this.drop_down_button(this.taiwanCountry, this.rentSiteData, this.realData)
+                            //this.drop_down_button(this.taiwanCountry, this.rentSiteData, this.realData)
                             this.slider(this.taiwanCountry)
                             this.button(this.taiwanCountry)
                         })
@@ -86,6 +86,21 @@ let vm = new Vue({
                 .duration(2000)
                 .attr("x", function (d) {
                     var dx = 0
+                    if (d.properties.COUNTYNAME == "新北市") {
+                        dx += 40
+                    }
+                    if (d.properties.COUNTYNAME == "臺北市") {
+                        dx -= 40
+                    }
+                    if (d.properties.COUNTYNAME == "臺南市") {
+                        dx -= 25
+                    }
+                    if (d.properties.COUNTYNAME == "高雄市") {
+                        dx += 25
+                    }
+                    if (d.properties.COUNTYNAME == "桃園市") {
+                        dx -= 15
+                    }
                     return path.centroid(d)[0] + dx
                 })
                 .attr("y", function (d) {
@@ -107,6 +122,43 @@ let vm = new Vue({
             let cityFeatures = topojson.feature(mapData, mapData.objects["COUNTY_MOI_1081121"]).features
             let projection = d3.geoMercator().center([118, 25]).scale(8500)
             let path = d3.geoPath(projection)
+
+            // this.rentSiteSix = {}
+            // for (key in rentSiteData) {
+            //     let cur = rentSiteData[key]
+            //     if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(cur.city)) {
+            //         if (typeof this.rentSiteSix[cur.city] == "undefined") this.rentSiteSix[cur.city] = [{ area: cur.area, counts: cur.counts }]
+            //         else this.rentSiteSix[cur.city].push({ area: cur.area, counts: cur.counts })
+            //     }
+            // }
+            // console.log(this.rentSiteSix)
+
+            // this.realSix = {}
+            // realData.forEach((year, index) => {
+            //     year.forEach((cur) => {
+            //         if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(cur.city)) {
+            //             if (typeof this.realSix[cur.city] == "undefined") {
+            //                 this.realSix[cur.city] = [{ area: cur.area, counts: {} }]
+            //                 this.realSix[cur.city][0].counts[index + 2016] = parseInt(cur.value)
+            //             } else {
+            //                 var curIndex = -1
+            //                 for (i = 0; i < this.realSix[cur.city].length; i++) {
+            //                     if (this.realSix[cur.city][i].area == cur.area) {
+            //                         curIndex = i
+            //                         break
+            //                     }
+            //                 }
+            //                 if (curIndex == -1) {
+            //                     curIndex = this.realSix[cur.city].length
+            //                     this.realSix[cur.city].push({ area: cur.area, counts: {} })
+            //                 } else {
+            //                     this.realSix[cur.city][curIndex].counts[index + 2016] = parseInt(cur.value)
+            //                 }
+            //             }
+            //         }
+            //     })
+            // })
+            // console.log(this.realSix)
 
             d3.select("g.counties")
                 .selectAll("path")
@@ -286,6 +338,21 @@ let vm = new Vue({
                 .append("text")
                 .attr("x", function (d) {
                     var dx = 0
+                    if (d.properties.COUNTYNAME == "新北市") {
+                        dx += 40
+                    }
+                    if (d.properties.COUNTYNAME == "臺北市") {
+                        dx -= 40
+                    }
+                    if (d.properties.COUNTYNAME == "臺南市") {
+                        dx -= 25
+                    }
+                    if (d.properties.COUNTYNAME == "高雄市") {
+                        dx += 25
+                    }
+                    if (d.properties.COUNTYNAME == "桃園市") {
+                        dx -= 15
+                    }
                     return path.centroid(d)[0] + dx
                 })
                 .attr("y", function (d) {
@@ -326,98 +393,63 @@ let vm = new Vue({
                     tooltip.style("visibility", "hidden")
                 })
         },
-        drop_down_button(mapData, rentSiteData, realData) {
-            let projection = d3.geoMercator().center([120, 25]).scale(8500)
-            let path = d3.geoPath(projection)
-            let cityFeatures = topojson.feature(mapData, mapData.objects["COUNTY_MOI_1081121"]).features
-            var lineGenerator = d3.line()
-            let sixCity = ["請選擇縣市", "臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"]
+        // drop_down_button(mapData, rentSiteData, realData) {
+        //     let projection = d3.geoMercator().center([120, 25]).scale(8500)
+        //     let path = d3.geoPath(projection)
+        //     let cityFeatures = topojson.feature(mapData, mapData.objects["COUNTY_MOI_1081121"]).features
+        //     var lineGenerator = d3.line()
+        //     let sixCity = ["請選擇縣市", "臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"]
             
-            this.rentSiteSix = {}
-            for (key in rentSiteData) {
-                let cur = rentSiteData[key]
-                if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(cur.city)) {
-                    if (typeof this.rentSiteSix[cur.city] == "undefined") this.rentSiteSix[cur.city] = [{ area: cur.area, counts: cur.counts }]
-                    else this.rentSiteSix[cur.city].push({ area: cur.area, counts: cur.counts })
-                }
-            }
-            console.log(this.rentSiteSix)
+            
 
-            this.realSix = {}
-            realData.forEach((year, index) => {
-                year.forEach((cur) => {
-                    if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(cur.city)) {
-                        if (typeof this.realSix[cur.city] == "undefined") {
-                            this.realSix[cur.city] = [{ area: cur.area, counts: {} }]
-                            this.realSix[cur.city][0].counts[index + 2016] = parseInt(cur.value)
-                        } else {
-                            var curIndex = -1
-                            for (i = 0; i < this.realSix[cur.city].length; i++) {
-                                if (this.realSix[cur.city][i].area == cur.area) {
-                                    curIndex = i
-                                    break
-                                }
-                            }
-                            if (curIndex == -1) {
-                                curIndex = this.realSix[cur.city].length
-                                this.realSix[cur.city].push({ area: cur.area, counts: {} })
-                            } else {
-                                this.realSix[cur.city][curIndex].counts[index + 2016] = parseInt(cur.value)
-                            }
-                        }
-                    }
-                })
-            })
-            console.log(this.realSix)
+        //     var dropdownButton = d3
+        //         .select("div.drop_down_button")
+        //         .append("select")
+        //         .style("font-size", "20px")
+        //         .style("position", "absolute")
+        //         .style("border-radius", "3px")
+        //         .style("border-width", "3px")
+        //         .style("font-family", "Microsoft JhengHei")
+        //         .style("padding", "5px")
+        //         .style("left", "150px")
+        //         .style("bottom", "300px")
 
-            var dropdownButton = d3
-                .select("div.drop_down_button")
-                .append("select")
-                .style("font-size", "20px")
-                .style("position", "absolute")
-                .style("border-radius", "3px")
-                .style("border-width", "3px")
-                .style("font-family", "Microsoft JhengHei")
-                .style("padding", "5px")
-                .style("left", "150px")
-                .style("bottom", "300px")
-
-            dropdownButton
-                .selectAll("myOptions")
-                .data(sixCity)
-                .enter()
-                .append("option")
-                .text(function (d) {
-                    return d
-                })
-                .attr("value", function (d) {
-                    return d
-                })
+        //     dropdownButton
+        //         .selectAll("myOptions")
+        //         .data(sixCity)
+        //         .enter()
+        //         .append("option")
+        //         .text(function (d) {
+        //             return d
+        //         })
+        //         .attr("value", function (d) {
+        //             return d
+        //         })
                 
-            dropdownButton.on("change", function (d) {
-                    var selectedOption = d3.select(this).property("value")
-                    console.log(selectedOption)
-                })
-        },
+        //     dropdownButton.on("change", function (d) {
+        //             var selectedOption = d3.select(this).property("value")
+        //             console.log(selectedOption)
+        //         })
+        // },
         slider(mapData) {
 
             var dataTime = d3.range(0, 4).map(function (d) {
-                return new Date(2016 + d, 1, 1)
+                return 105 + d
             })
 
             var sliderTime = d3
                 .sliderBottom()
                 .min(d3.min(dataTime))
                 .max(d3.max(dataTime))
-                .step(1000 * 60 * 60 * 24 * 365)
-                .width(300)
-                .tickFormat(d3.timeFormat("%Y"))
+                .step(1)
+                .width(200)
+                .tickFormat(d3.format(""))
                 .tickValues(dataTime)
-                .default(new Date(2011, 1, 1))
+                .default(105)
                 .on("onchange", (val) => {
-                    d3.select("p#value-time").text(d3.timeFormat("%Y")(val))
+                    d3.select("h1#value-time").text(d3.format("")(val))
                     // console.log(d3.timeFormat("%Y")(val))
-                    this.curYear = d3.timeFormat("%Y")(val)
+                    this.curYear = val + 1911
                     this.update(mapData)
                 })
 
@@ -426,14 +458,14 @@ let vm = new Vue({
             var gTime = d3
                 .select("div#slider-time")
                 .append("svg")
-                .attr("width", 500)
+                .attr("width", 250)
                 .attr("height", 100)
                 .append("g")
                 .attr("transform", "translate(30,30)")
 
             gTime.call(sliderTime)
 
-            d3.select("p#value-time").text(d3.timeFormat("%Y")(sliderTime.value()))
+            d3.select("h1#value-time").text(d3.format("")(sliderTime.value()))
         },
         button(mapData) {
             var button = d3.select("div.button_div")
