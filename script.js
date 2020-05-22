@@ -43,7 +43,7 @@ let vm = new Vue({
     },
     methods: {
         update(mapData) {
-            let projection = d3.geoMercator().center([120, 25]).scale(8500)
+            let projection = d3.geoMercator().center([118, 25]).scale(8500)
             let path = d3.geoPath(projection)
             let cityFeatures = topojson.feature(mapData, mapData.objects["COUNTY_MOI_1081121"]).features
             var lineGenerator = d3.line()
@@ -96,15 +96,16 @@ let vm = new Vue({
                 })
                 .text((d) => {
                     if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(d.properties.COUNTYNAME)) {
-                        return d.properties.COUNTYNAME + this.curData[d.properties.COUNTYNAME].counts[this.curYear]
+                        return d.properties.COUNTYNAME + " " + this.curData[d.properties.COUNTYNAME].counts[this.curYear]
                     }
                     return ""
                 })
         },
         draw_map(mapData) {
-            let projection = d3.geoMercator().center([120, 25]).scale(8500)
+            let cityFeatures = topojson.feature(mapData, mapData.objects["COUNTY_MOI_1081121"]).features
+            let projection = d3.geoMercator().center([118, 25]).scale(8500)
             let path = d3.geoPath(projection)
-
+            
             d3.select("g.counties")
                 .selectAll("path")
                 .data(topojson.feature(mapData, mapData.objects["COUNTY_MOI_1081121"]).features)
@@ -120,6 +121,49 @@ let vm = new Vue({
                     })
                 )
             )
+                    
+            const zoom = d3.zoom().scaleExtent([1, 40]).on("zoom", zoomed)
+            
+            svg = d3.select("svg").on("click", reset)
+            
+            counties = d3.select("g.counties")
+            mountains = d3.select("g.mountain")
+            borders = d3.select("path.county-borders")
+
+            svg.call(zoom)
+            // function random() {
+            //     console.log(d3.select(this))
+            //     .on("mouseover", function () {
+            //         d3.select(this).attr("city", function (d) {
+            //             label = d.properties.COUNTYNAME + "</br>成交量：" + vm.curData[d.properties.COUNTYNAME].counts[vm.curYear]
+            //         })
+            //     })
+            //     const [x, y] = path.centroid()
+            //     console.log([x, y])
+            //     d3.event.stopPropagation()
+            //     svg.transition()
+            //         .duration(2500)
+            //         .call(
+            //             zoom.transform,
+            //             d3.zoomIdentity
+            //                 .translate(50, 50)
+            //                 .scale(5)
+            //                 .translate(-x, -y)
+            //         )
+            // }
+            var width = 0, height =  0;
+            function reset() {
+                svg.transition()
+                    .duration(750)
+                    .call(zoom.transform, d3.zoomIdentity, d3.zoomTransform(svg.node()).invert([width / 2, height / 2]))
+            }
+
+            function zoomed() {
+                counties.attr("transform", d3.event.transform)
+                mountains.attr("transform", d3.event.transform)
+                borders.attr("transform", d3.event.transform)
+            }
+
         },
         draw_mountain(mapData, rentSiteData, realData) {
             this.rentSiteSum = {}
@@ -157,7 +201,7 @@ let vm = new Vue({
             console.log(this.realSum)
 
             let svg = d3.select("svg")
-            let projection = d3.geoMercator().center([120, 25]).scale(8500)
+            let projection = d3.geoMercator().center([118, 25]).scale(8500)
             let path = d3.geoPath(projection)
 
             let cityFeatures = topojson.feature(mapData, mapData.objects["COUNTY_MOI_1081121"]).features
@@ -203,7 +247,7 @@ let vm = new Vue({
 
             this.max = rentSiteMax
 
-            let linear = d3.scaleLinear().range([0, 150]).domain([0, this.max])
+            let linear = d3.scaleLinear().range([0, 200]).domain([0, this.max])
 
             this.mountain
                 .selectAll("path")
@@ -232,34 +276,7 @@ let vm = new Vue({
                     return lineGenerator([left, top, right])
                 })
 
-            this.mountain
-                .selectAll("path")
-                .data(cityFeatures)
-                .transition()
-                .duration(1000)
-                .attr("d", (d) => {
-                    var dx = 0
-                    var dy = 0
-                    if (d.properties.COUNTYNAME == "新北市") {
-                        dy += 15
-                    }
-                    if (d.properties.COUNTYNAME == "嘉義縣") {
-                        dx += 15
-                    }
-                    if (d.properties.COUNTYNAME == "苗栗縣") {
-                        dx += 10
-                    }
-
-                    height = linear(this.curData[d.properties.COUNTYNAME].counts[this.curYear])
-
-                    //console.log(height)
-                    var center = path.centroid(d)
-                    var left = [center[0] - 4 + dx, center[1] + dy]
-                    var right = [center[0] + 4 + dx, center[1] + dy]
-                    var top = [center[0] + dx, center[1] - height + dy]
-
-                    return lineGenerator([left, top, right])
-                })
+            this.update(mapData)
 
             this.mountain
                 .selectAll("text")
@@ -313,7 +330,7 @@ let vm = new Vue({
             let path = d3.geoPath(projection)
             let cityFeatures = topojson.feature(mapData, mapData.objects["COUNTY_MOI_1081121"]).features
             var lineGenerator = d3.line()
-            let sixCity = ["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"]
+            let sixCity = ["請選擇縣市", "臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"]
 
             var dropdownButton = d3
                 .select("div.drop_down_button")
@@ -385,26 +402,29 @@ let vm = new Vue({
 
             button
                 .append("button")
-                .text("租屋網") 
+                .attr("id", "rent")
+                .text("租屋網")
                 .classed("button", true)
-                .style("left", "150px")    
-                .style("top", "100px")
+                .classed("active", true)
                 .on("click", () => {
                     this.curData = this.rentSiteSum
                     this.update(mapData)
+                    button.select("#rent").classed("active", true)
+                    button.select("#real").classed("active", false)
                 })
-            
+
             button
                 .append("button")
+                .attr("id", "real")
                 .text("實價登錄")
                 .classed("button", true)
-                .style("left", "270px")    
-                .style("top", "100px")
                 .on("click", () => {
                     this.curData = this.realSum
                     this.update(mapData)
+                    button.select("#real").classed("active", true)
+                    button.select("#rent").classed("active", false)
                 })
-
         },
+        zoom() {},
     },
 })

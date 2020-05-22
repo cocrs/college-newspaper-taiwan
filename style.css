@@ -9,7 +9,7 @@ body {
     fill: #b3b3b3;
 }
 .mountain {
-    stroke: rgb(125, 147, 245);
+    stroke: rgb(223, 23, 16);
 }
 .counties :hover {
     fill: #797979;
@@ -20,31 +20,26 @@ body {
     stroke: #fff;
     stroke-width: 0.5px;
 }
+.button_div{
+    margin-top: -700px;
+}
 .button {
-    display: inline-block;
-    padding: 15px 25px;
-    font-size: 18px;
-    cursor: pointer;
-    text-align: center;
-    text-decoration: none;
-    outline: none;
-    color: #fff;
-    background-color: #a874d8;
+    position: relative;
+    left: 150px;
     border: none;
-    border-radius: 15px;
-    box-shadow: 0 5px rgb(136, 98, 158);
-    position: absolute;
+    outline: none;
+    padding: 10px 16px;
+    background-color: #f1f1f1;
+    cursor: pointer;
+    font-size: 18px;
     font-family: Microsoft JhengHei;
 }
 
+/* Style the active class, and buttons on mouse-over */
+.active,
 .button:hover {
-    background-color: rgb(151, 111, 190);
-}
-
-.button:active {
-    background-color: #8850bd;
-    box-shadow: 0 5px rgb(98, 62, 119);
-    transform: translateY(4px);
+    background-color: #666;
+    color: white;
 }
 
 .tooltip {
@@ -63,7 +58,7 @@ body {
 
 /* rent site */
 .stop-top-rentsite {
-    stop-color: #3d7aff; /* Indigo */
+    stop-color: #7c0808; /* Indigo */
 }
 .stop-bottom-rentsite {
     stop-color: #ffffff; /* Teal */
