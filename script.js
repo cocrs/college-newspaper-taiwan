@@ -4,8 +4,10 @@ let vm = new Vue({
         taiwanCountry: [],
         rentSiteData: [],
         rentSiteSum: [],
+        rentSiteSix: [],
         realData: [],
         realSum: [],
+        realSix: [],
         mountain: [],
         curData: [],
         curYear: [],
@@ -17,7 +19,6 @@ let vm = new Vue({
             .then((result) => {
                 this.taiwanCountry = result
                 this.draw_map(this.taiwanCountry)
-                this.drop_down_button(this.taiwanCountry)
                 fetch("./data/output591Merged.json", { mode: "no-cors" })
                     .then((res) => res.json())
                     .then((result) => {
@@ -35,6 +36,7 @@ let vm = new Vue({
                         ).then((value) => {
                             this.realData = value
                             this.draw_mountain(this.taiwanCountry, this.rentSiteData, this.realData)
+                            this.drop_down_button(this.taiwanCountry, this.rentSiteData, this.realData)
                             this.slider(this.taiwanCountry)
                             this.button(this.taiwanCountry)
                         })
@@ -111,7 +113,7 @@ let vm = new Vue({
                 })
                 .text((d) => {
                     if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(d.properties.COUNTYNAME)) {
-                        return d.properties.COUNTYNAME + " " + this.curData[d.properties.COUNTYNAME].counts[this.curYear]
+                        return d.properties.COUNTYNAME + " " + this.curData[d.properties.COUNTYNAME].counts[this.curYear].toLocaleString()
                     }
                     return ""
                 })
@@ -139,7 +141,7 @@ let vm = new Vue({
 
             const zoom = d3.zoom().scaleExtent([1, 40]).on("zoom", zoomed)
 
-            svg = d3.select("svg").on("click", reset)
+            svg = d3.select("svg") //.on("click", reset)
 
             counties = d3.select("g.counties")
             mountains = d3.select("g.mountain")
@@ -166,19 +168,18 @@ let vm = new Vue({
             //                 .translate(-x, -y)
             //         )
             // }
-            var width = 0, height = 0;
-            function reset() {
-                svg.transition()
-                    .duration(750)
-                    .call(zoom.transform, d3.zoomIdentity, d3.zoomTransform(svg.node()).invert([width / 2, height / 2]))
-            }
+            // var width = 0, height =  0;
+            // function reset() {
+            //     svg.transition()
+            //         .duration(750)
+            //         .call(zoom.transform, d3.zoomIdentity, d3.zoomTransform(svg.node()).invert([0, 0]))
+            // }
 
             function zoomed() {
                 counties.attr("transform", d3.event.transform)
                 mountains.attr("transform", d3.event.transform)
                 borders.attr("transform", d3.event.transform)
             }
-
         },
         draw_mountain(mapData, rentSiteData, realData) {
             this.rentSiteSum = {}
@@ -330,7 +331,7 @@ let vm = new Vue({
                 .style("stroke", "black")
                 .text((d) => {
                     if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(d.properties.COUNTYNAME)) {
-                        return d.properties.COUNTYNAME + " " + this.curData[d.properties.COUNTYNAME].counts[this.curYear]
+                        return d.properties.COUNTYNAME + " " + this.curData[d.properties.COUNTYNAME].counts[this.curYear].toLocaleString()
                     }
                     return ""
                 })
@@ -341,7 +342,7 @@ let vm = new Vue({
                 .selectAll("path")
                 .on("mouseover", function () {
                     d3.select(this).attr("city", function (d) {
-                        label = d.properties.COUNTYNAME + "</br>成交量：" + vm.curData[d.properties.COUNTYNAME].counts[vm.curYear]
+                        label = d.properties.COUNTYNAME + "</br>成交量：" + vm.curData[d.properties.COUNTYNAME].counts[vm.curYear].toLocaleString()
                     })
                 })
                 .on("mousemove", function () {
@@ -355,12 +356,49 @@ let vm = new Vue({
                     tooltip.style("visibility", "hidden")
                 })
         },
-        drop_down_button(mapData) {
+        drop_down_button(mapData, rentSiteData, realData) {
             let projection = d3.geoMercator().center([120, 25]).scale(8500)
             let path = d3.geoPath(projection)
             let cityFeatures = topojson.feature(mapData, mapData.objects["COUNTY_MOI_1081121"]).features
             var lineGenerator = d3.line()
             let sixCity = ["請選擇縣市", "臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"]
+            
+            this.rentSiteSix = {}
+            for (key in rentSiteData) {
+                let cur = rentSiteData[key]
+                if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(cur.city)) {
+                    if (typeof this.rentSiteSix[cur.city] == "undefined") this.rentSiteSix[cur.city] = [{ area: cur.area, counts: cur.counts }]
+                    else this.rentSiteSix[cur.city].push({ area: cur.area, counts: cur.counts })
+                }
+            }
+            console.log(this.rentSiteSix)
+
+            this.realSix = {}
+            realData.forEach((year, index) => {
+                year.forEach((cur) => {
+                    if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(cur.city)) {
+                        if (typeof this.realSix[cur.city] == "undefined") {
+                            this.realSix[cur.city] = [{ area: cur.area, counts: {} }]
+                            this.realSix[cur.city][0].counts[index + 2016] = parseInt(cur.value)
+                        } else {
+                            var curIndex = -1
+                            for (i = 0; i < this.realSix[cur.city].length; i++) {
+                                if (this.realSix[cur.city][i].area == cur.area) {
+                                    curIndex = i
+                                    break
+                                }
+                            }
+                            if (curIndex == -1) {
+                                curIndex = this.realSix[cur.city].length
+                                this.realSix[cur.city].push({ area: cur.area, counts: {} })
+                            } else {
+                                this.realSix[cur.city][curIndex].counts[index + 2016] = parseInt(cur.value)
+                            }
+                        }
+                    }
+                })
+            })
+            console.log(this.realSix)
 
             var dropdownButton = d3
                 .select("div.drop_down_button")
@@ -385,14 +423,14 @@ let vm = new Vue({
                 .attr("value", function (d) {
                     return d
                 })
-                .on("change", function (d) {
-                    // recover the option that has been chosen
+                
+            dropdownButton.on("change", function (d) {
                     var selectedOption = d3.select(this).property("value")
                     console.log(selectedOption)
-                    // run the updateChart function with this selected option
                 })
         },
         slider(mapData) {
+
             var dataTime = d3.range(0, 4).map(function (d) {
                 return new Date(2016 + d, 1, 1)
             })
@@ -455,6 +493,5 @@ let vm = new Vue({
                     button.select("#rent").classed("active", false)
                 })
         },
-        zoom() { },
     },
 })
