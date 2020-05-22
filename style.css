@@ -8,12 +8,24 @@ body {
 .counties {
     fill: #b3b3b3;
 }
-.mountain {
-    stroke: rgb(223, 23, 16);
-}
 .counties :hover {
     fill: #797979;
     transition: 0.5s;
+}
+.areas{
+    fill: #b3b3b3;
+}
+.areas :hover {
+    fill: #797979;
+    transition: 0.5s;
+}
+.mountain {
+    stroke: rgb(223, 23, 16);
+}
+.area-borders{
+    fill: none;
+    stroke: rgb(148, 148, 148);
+    stroke-width: 0.5px;
 }
 .county-borders {
     fill: none;
