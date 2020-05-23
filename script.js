@@ -461,7 +461,10 @@ let vm = new Vue({
                                 break
                             }
                         }
-                        if (typeof vm.curAreaData[d.properties.COUNTYNAME][curIndex].counts[vm.curYear] == "undefined") {
+                        if (typeof vm.curAreaData[d.properties.COUNTYNAME][curIndex] == "undefined") {
+                            value = 0
+                        }
+                        else if (typeof vm.curAreaData[d.properties.COUNTYNAME][curIndex].counts[vm.curYear] == "undefined") {
                             value = 0
                         } else {
                             value = vm.curAreaData[d.properties.COUNTYNAME][curIndex].counts[vm.curYear]
