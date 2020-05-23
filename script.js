@@ -193,7 +193,7 @@ let vm = new Vue({
                                 console.log(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts)
                             } else {
                                 if (d.properties.COUNTYNAME == '臺北市') {
-                                    height = linear(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts[this.curYear]) * 3
+                                    height = linear(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts[this.curYear]) * 2
                                 } else {
                                     height = linear(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts[this.curYear]) * 5
                                 }
@@ -348,7 +348,7 @@ let vm = new Vue({
                             if (d.properties.COUNTYNAME == "臺北市") {
                                 curScale = 7
                                 dx += -60
-                                dy += -20
+                                dy += -0
                             }
                             if (d.properties.COUNTYNAME == "新北市") {
                                 curScale = 4.5
