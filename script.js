@@ -56,19 +56,19 @@ let vm = new Vue({
                                     //console.log(cur.city)
                                     for (key2 in cur.counts) {
                                         //console.log(key2)
-                                        
+
                                         if (key2 in this.rentSiteSum[cur.city].counts) {
                                             //console.log(cur.counts[key2])
                                             this.rentSiteSum[cur.city].counts[key2] += cur.counts[key2]
                                         }
-                                        else{
+                                        else {
                                             this.rentSiteSum[cur.city].counts[key2] = JSON.parse(JSON.stringify(cur.counts[key2]))
-                                        } 
+                                        }
                                         //console.log(this.rentSiteSum[cur.city].counts[key2])
                                     }
-                                    
+
                                 } else {
-                                    if(typeof cur.counts == "undefined")
+                                    if (typeof cur.counts == "undefined")
                                         console.log(cur.counts)
                                     this.rentSiteSum[cur.city] = { counts: JSON.parse(JSON.stringify(cur.counts)) }
                                 }
@@ -99,7 +99,7 @@ let vm = new Vue({
                                 let cur = this.rentSiteData[key]
                                 //console.log(cur)
                                 if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(cur.city)) {
-                                    if (typeof this.rentSiteSix[cur.city] == "undefined"){
+                                    if (typeof this.rentSiteSix[cur.city] == "undefined") {
                                         this.rentSiteSix[cur.city] = [{ area: cur.area, counts: cur.counts }]
                                         //console.log(cur, cur.area, cur.counts)
                                     }
@@ -113,7 +113,7 @@ let vm = new Vue({
                                 //console.log(this.realData[index])
                                 year.forEach((cur) => {
                                     if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(cur.city)) {
-                                        
+
                                         if (typeof this.realSix[cur.city] == "undefined") {
                                             console.log(cur.area)
                                             this.realSix[cur.city] = [{ area: cur.area, counts: {} }]
@@ -192,7 +192,11 @@ let vm = new Vue({
                                 height = 0
                                 console.log(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts)
                             } else {
-                                height = linear(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts[this.curYear])
+                                if (d.properties.COUNTYNAME == '臺北市') {
+                                    height = linear(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts[this.curYear]) * 3
+                                } else {
+                                    height = linear(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts[this.curYear]) * 5
+                                }
                             }
                             var center = path.centroid(d)
                             //console.log(d.properties.TOWNNAME ,center)
@@ -344,16 +348,20 @@ let vm = new Vue({
                             if (d.properties.COUNTYNAME == "臺北市") {
                                 curScale = 7
                                 dx += -60
-                                dy += -40
+                                dy += -20
                             }
                             if (d.properties.COUNTYNAME == "新北市") {
-                                curScale = 4.0
-                                dx += 40
-                                dy += 20
+                                curScale = 4.5
+                                dx += 20
+                                dy += 30
                             }
                             if (d.properties.COUNTYNAME == "桃園市") {
+                                curScale = 5.0
                                 dx += -20
-                                dy += -20
+                                dy += 10
+                            }
+                            if (d.properties.COUNTYNAME == "臺南市") {
+                                dx += -20
                             }
                             if (d.properties.COUNTYNAME == "臺中市") {
                                 curScale = 4.8
