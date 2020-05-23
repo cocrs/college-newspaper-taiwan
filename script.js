@@ -33,7 +33,7 @@ let vm = new Vue({
                 fetch("./data/output591Merged.json")
                     .then((res) => res.json())
                     .then((result3) => {
-                        console.log(result3)
+                        //console.log(result3)
                         this.rentSiteData = result3
                         //console.log(this.rentSiteData)
                         Promise.all(
@@ -48,7 +48,7 @@ let vm = new Vue({
                             })
                         ).then((value) => {
                             this.realData = value
-                            console.log(this.rentSiteData)
+                            //console.log(this.rentSiteData)
                             this.rentSiteSum = {}
                             for (key in this.rentSiteData) {
                                 var cur = this.rentSiteData[key]
@@ -110,9 +110,12 @@ let vm = new Vue({
 
                             this.realSix = {}
                             this.realData.forEach((year, index) => {
+                                //console.log(this.realData[index])
                                 year.forEach((cur) => {
                                     if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(cur.city)) {
+                                        
                                         if (typeof this.realSix[cur.city] == "undefined") {
+                                            console.log(cur.area)
                                             this.realSix[cur.city] = [{ area: cur.area, counts: {} }]
                                             this.realSix[cur.city][0].counts[index + 2016] = parseInt(cur.value)
                                         } else {
@@ -123,9 +126,12 @@ let vm = new Vue({
                                                     break
                                                 }
                                             }
+                                            console.log(cur.area, curIndex)
+                                            //console.log(curIndex)
                                             if (curIndex == -1) {
                                                 curIndex = this.realSix[cur.city].length
                                                 this.realSix[cur.city].push({ area: cur.area, counts: {} })
+                                                this.realSix[cur.city][curIndex].counts[index + 2016] = parseInt(cur.value)
                                             } else {
                                                 this.realSix[cur.city][curIndex].counts[index + 2016] = parseInt(cur.value)
                                             }
@@ -157,7 +163,7 @@ let vm = new Vue({
             let linear = d3.scaleLinear().range([0, 200]).domain([0, this.max])
 
             if (this.isZoomed) {
-                //console.log("1")
+                console.log("1")
                 this.areaMountain
                     .selectAll("path")
                     .data(this.curAreaFeature)
@@ -177,11 +183,14 @@ let vm = new Vue({
                                     break
                                 }
                             }
-                            //console.log(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts[this.curYear])
+                            console.log(curIndex)
                             if (typeof this.curAreaData[d.properties.COUNTYNAME][curIndex] == "undefined") {
+                                console.log(d.properties.TOWNNAME)
+                                console.log(this.curAreaData)
                                 height = 0
                             } else if (typeof this.curAreaData[d.properties.COUNTYNAME][curIndex].counts[this.curYear] == "undefined") {
                                 height = 0
+                                console.log(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts)
                             } else {
                                 height = linear(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts[this.curYear])
                             }
@@ -374,6 +383,7 @@ let vm = new Vue({
                             vm.draw_area_mountain(vm.taiwanArea)
                             vm.mountain.selectAll("path").remove()
                             vm.mountain.selectAll("text").remove()
+                            //console.log(vm.realSix)
                         }
                     })
                 })
@@ -466,6 +476,7 @@ let vm = new Vue({
                         return lineGenerator([left, top, right])
                     }
                 })
+
             this.update(this.selectedCounty)
 
             let tooltip = d3.select("body").append("div").attr("class", "tooltip")
