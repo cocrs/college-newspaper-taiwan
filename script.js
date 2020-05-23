@@ -161,10 +161,9 @@ let vm = new Vue({
                                 }
                             }
                             //console.log(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts[this.curYear])
-                            if(typeof this.curAreaData[d.properties.COUNTYNAME][curIndex] == "undefined"){
+                            if (typeof this.curAreaData[d.properties.COUNTYNAME][curIndex] == "undefined") {
                                 height = 0
-                            }
-                            else if (typeof this.curAreaData[d.properties.COUNTYNAME][curIndex].counts[this.curYear] == "undefined") {
+                            } else if (typeof this.curAreaData[d.properties.COUNTYNAME][curIndex].counts[this.curYear] == "undefined") {
                                 height = 0
                             } else {
                                 height = linear(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts[this.curYear])
@@ -248,78 +247,6 @@ let vm = new Vue({
                     })
             }
         },
-        draw_area_mountain(areaData) {
-            let projection = d3.geoMercator().center([118, 25]).scale(8500)
-            let path = d3.geoPath(projection)
-            var lineGenerator = d3.line()
-            this.curAreaFeature = topojson.feature(areaData, areaData.objects[Object.keys(areaData.objects)[0]]).features
-
-            if (this.curData == this.rentSiteSum) {
-                //console.log("rent")
-                this.curAreaData = this.rentSiteSix
-            } else {
-                //console.log("real")
-                this.curAreaData = this.realSix
-            }
-
-            //console.log(topojson.feature(areaData, areaData.objects[Object.keys(areaData.objects)[0]]))
-            this.areaMountain = d3.select("g.area-mountain")
-            this.areaMountain
-                .selectAll("path")
-                .data(this.curAreaFeature)
-                .enter()
-                .append("path")
-                .classed("filled-rentsite", true)
-                .attr("d", (d) => {
-                    if (this.selectedCounty == d.properties.COUNTYNAME) {
-                        //console.log(this.selectedCounty, d.properties.COUNTYNAME)
-                        var dx = 0
-                        var dy = 0
-                        //console.log(height)
-                        var center = path.centroid(d)
-                        //console.log(d.properties.TOWNNAME ,center)
-                        var left = [center[0] - 1 + dx, center[1] + dy]
-                        var right = [center[0] + 1 + dx, center[1] + dy]
-                        var top = [center[0] + dx, center[1] + dy]
-
-                        return lineGenerator([left, top, right])
-                    }
-                })
-            this.update(this.selectedCounty)
-
-            let tooltip = d3.select("body").append("div").attr("class", "tooltip")
-
-            this.areaMountain
-                .selectAll("path")
-                .on("mouseover", function () {
-                    d3.select(this).attr("city", function (d) {
-                        curIndex = -1
-                        for (i = 0; i < vm.curAreaData[d.properties.COUNTYNAME].length; i++) {
-                            if (d.properties.TOWNNAME == vm.curAreaData[d.properties.COUNTYNAME][i].area) {
-                                //console.log(d.properties.TOWNNAME, vm.curAreaData[d.properties.COUNTYNAME][i].area)
-                                curIndex = i
-                                break
-                            }
-                        }
-                        if (typeof vm.curAreaData[d.properties.COUNTYNAME][curIndex].counts[vm.curYear] == "undefined") {
-                            value = 0
-                        } else {
-                            value = vm.curAreaData[d.properties.COUNTYNAME][curIndex].counts[vm.curYear]
-                        }
-                        label = d.properties.TOWNNAME + "</br>成交量：" + value.toLocaleString()
-                    })
-                })
-                .on("mousemove", function () {
-                    tooltip
-                        .html(label)
-                        .style("left", d3.event.pageX - 20 + "px")
-                        .style("top", d3.event.pageY + 20 + "px")
-                        .style("visibility", "visible")
-                })
-                .on("mouseout", function () {
-                    tooltip.style("visibility", "hidden")
-                })
-        },
         draw_map(mapData, areaData) {
             //console.log("here", mapData)
             this.curFeature = topojson.feature(mapData, mapData.objects[Object.keys(mapData.objects)[0]]).features
@@ -332,11 +259,6 @@ let vm = new Vue({
                 .enter()
                 .append("path")
                 .attr("d", path)
-                // .on("mouseover", function () {
-                //     d3.select(this).attr("city", function (d) {
-                //         let label = d.properties.COUNTYNAME
-                //     })
-                // })
                 .on("click", function () {
                     d3.select(this).attr("city", function (d) {
                         if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(d.properties.COUNTYNAME)) {
@@ -410,12 +332,6 @@ let vm = new Vue({
             areaborders = d3.select("path.area-borders")
 
             svg.call(zoom)
-            // var width = 0, height =  0;
-            // function reset() {
-            //     svg.transition()
-            //         .duration(750)
-            //         .call(zoom.transform, d3.zoomIdentity, d3.zoomTransform(svg.node()).invert([0, 0]))
-            // }
 
             function zoomed() {
                 counties.attr("transform", d3.event.transform)
@@ -425,6 +341,78 @@ let vm = new Vue({
                 borders.attr("transform", d3.event.transform)
                 areaborders.attr("transform", d3.event.transform)
             }
+        },
+        draw_area_mountain(areaData) {
+            let projection = d3.geoMercator().center([118, 25]).scale(8500)
+            let path = d3.geoPath(projection)
+            var lineGenerator = d3.line()
+            this.curAreaFeature = topojson.feature(areaData, areaData.objects[Object.keys(areaData.objects)[0]]).features
+
+            if (this.curData == this.rentSiteSum) {
+                //console.log("rent")
+                this.curAreaData = this.rentSiteSix
+            } else {
+                //console.log("real")
+                this.curAreaData = this.realSix
+            }
+
+            //console.log(topojson.feature(areaData, areaData.objects[Object.keys(areaData.objects)[0]]))
+            this.areaMountain = d3.select("g.area-mountain")
+            this.areaMountain
+                .selectAll("path")
+                .data(this.curAreaFeature)
+                .enter()
+                .append("path")
+                .classed("filled-rentsite", true)
+                .attr("d", (d) => {
+                    if (this.selectedCounty == d.properties.COUNTYNAME) {
+                        //console.log(this.selectedCounty, d.properties.COUNTYNAME)
+                        var dx = 0
+                        var dy = 0
+                        //console.log(height)
+                        var center = path.centroid(d)
+                        //console.log(d.properties.TOWNNAME ,center)
+                        var left = [center[0] - 1 + dx, center[1] + dy]
+                        var right = [center[0] + 1 + dx, center[1] + dy]
+                        var top = [center[0] + dx, center[1] + dy]
+
+                        return lineGenerator([left, top, right])
+                    }
+                })
+            this.update(this.selectedCounty)
+
+            let tooltip = d3.select("body").append("div").attr("class", "tooltip")
+
+            this.areaMountain
+                .selectAll("path")
+                .on("mouseover", function () {
+                    d3.select(this).attr("city", function (d) {
+                        curIndex = -1
+                        for (i = 0; i < vm.curAreaData[d.properties.COUNTYNAME].length; i++) {
+                            if (d.properties.TOWNNAME == vm.curAreaData[d.properties.COUNTYNAME][i].area) {
+                                //console.log(d.properties.TOWNNAME, vm.curAreaData[d.properties.COUNTYNAME][i].area)
+                                curIndex = i
+                                break
+                            }
+                        }
+                        if (typeof vm.curAreaData[d.properties.COUNTYNAME][curIndex].counts[vm.curYear] == "undefined") {
+                            value = 0
+                        } else {
+                            value = vm.curAreaData[d.properties.COUNTYNAME][curIndex].counts[vm.curYear]
+                        }
+                        label = d.properties.TOWNNAME + "</br>成交量：" + value.toLocaleString()
+                    })
+                })
+                .on("mousemove", function () {
+                    tooltip
+                        .html(label)
+                        .style("left", d3.event.pageX - 20 + "px")
+                        .style("top", d3.event.pageY + 20 + "px")
+                        .style("visibility", "visible")
+                })
+                .on("mouseout", function () {
+                    tooltip.style("visibility", "hidden")
+                })
         },
         draw_mountain(mapData) {
             let svg = d3.select("svg")
@@ -562,41 +550,6 @@ let vm = new Vue({
                     tooltip.style("visibility", "hidden")
                 })
         },
-        // drop_down_button(mapData, rentSiteData, realData) {
-        //     let projection = d3.geoMercator().center([120, 25]).scale(8500)
-        //     let path = d3.geoPath(projection)
-        //     let this.curFeature = topojson.feature(mapData, mapData.objects[Object.keys(mapData.objects)[0]]).features
-        //     var lineGenerator = d3.line()
-
-        //     var dropdownButton = d3
-        //         .select("div.drop_down_button")
-        //         .append("select")
-        //         .style("font-size", "20px")
-        //         .style("position", "absolute")
-        //         .style("border-radius", "3px")
-        //         .style("border-width", "3px")
-        //         .style("font-family", "Microsoft JhengHei")
-        //         .style("padding", "5px")
-        //         .style("left", "150px")
-        //         .style("bottom", "300px")
-
-        //     dropdownButton
-        //         .selectAll("myOptions")
-        //         .data(sixCity)
-        //         .enter()
-        //         .append("option")
-        //         .text(function (d) {
-        //             return d
-        //         })
-        //         .attr("value", function (d) {
-        //             return d
-        //         })
-
-        //     dropdownButton.on("change", function (d) {
-        //             var selectedOption = d3.select(this).property("value")
-        //             console.log(selectedOption)
-        //         })
-        // },
         slider(mapData) {
             var dataTime = d3.range(0, 4).map(function (d) {
                 return 105 + d
