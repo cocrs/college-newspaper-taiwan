@@ -145,7 +145,7 @@ let vm = new Vue({
                     .selectAll("path")
                     .data(this.curAreaFeature)
                     .transition()
-                    .duration(2000)
+                    .duration(1000)
                     .attr("d", (d) => {
                         if (this.selectedCounty == d.properties.COUNTYNAME) {
                             //console.log(this.selectedCounty, d.properties.COUNTYNAME)
@@ -183,7 +183,7 @@ let vm = new Vue({
                     .selectAll("path")
                     .data(this.curFeature)
                     .transition()
-                    .duration(2000)
+                    .duration(1000)
                     .attr("d", (d) => {
                         var dx = 0
                         var dy = 0
@@ -211,7 +211,7 @@ let vm = new Vue({
                     .selectAll("text")
                     .data(this.curFeature)
                     .transition()
-                    .duration(2000)
+                    .duration(1000)
                     .attr("x", function (d) {
                         var dx = 0
                         if (d.properties.COUNTYNAME == "新北市") {
@@ -240,10 +240,14 @@ let vm = new Vue({
                         return path.centroid(d)[1] - height + dy
                     })
                     .text((d) => {
+                        console.log(this.curData)
+                        return d.properties.COUNTYNAME + " " + this.curData[d.properties.COUNTYNAME].counts[this.curYear].toLocaleString()
+                    })
+                    .style('opacity', function (d) {
                         if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(d.properties.COUNTYNAME)) {
-                            return d.properties.COUNTYNAME + " " + this.curData[d.properties.COUNTYNAME].counts[this.curYear].toLocaleString()
+                            return '100%'
                         }
-                        return ""
+                        return '0%'
                     })
             }
         },
@@ -259,6 +263,47 @@ let vm = new Vue({
                 .enter()
                 .append("path")
                 .attr("d", path)
+                .attr('class', 'county-path')
+                .on('mouseover', function (a) {
+                    if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(a.properties.COUNTYNAME)) {
+                        d3.select(this).transition().style('fill', '#434A42')
+                    }
+                    vm.mountain.selectAll('text')
+                        .transition()
+                        .style('opacity', 0)
+                        .transition()
+                        .style('opacity', function (m) {
+                            if (m.properties.COUNTYNAME == a.properties.COUNTYNAME) {
+                                return 1
+                            }
+                            return 0
+                        })
+                        .style('display', function (m) {
+                            if (m.properties.COUNTYNAME == a.properties.COUNTYNAME) {
+                                return 'block'
+                            }
+                            return 'none'
+                        })
+                })
+                .on('mouseout', function (a) {
+                    d3.select(this).transition().style('fill', '#5F7470')
+                    vm.mountain.selectAll('text')
+                        .transition()
+                        .style('opacity', 0)
+                        .transition()
+                        .style('opacity', function (m) {
+                            if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(m.properties.COUNTYNAME)) {
+                                return 1
+                            }
+                            return 0
+                        })
+                        .style('display', function (m) {
+                            if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(m.properties.COUNTYNAME)) {
+                                return 'block'
+                            }
+                            return 'none'
+                        })
+                })
                 .on("click", function () {
                     d3.select(this).attr("city", function (d) {
                         if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(d.properties.COUNTYNAME)) {
@@ -269,23 +314,42 @@ let vm = new Vue({
                             //console.log(curIndex, vm.curFeature[curIndex])
                             dx = 0
                             dy = 0
-                            curScale = 4
+                            curScale = 5.5
                             if (d.properties.COUNTYNAME == "臺北市") {
                                 curScale = 7
                                 dx += -60
-                                dy += -20
+                                dy += 0
                             }
                             if (d.properties.COUNTYNAME == "新北市") {
+                                curScale = 4.0
                                 dx += 40
                                 dy += 40
+                            }
+                            if (d.properties.COUNTYNAME == "臺中市") {
+                                curScale = 4.8
+                            }
+                            if (d.properties.COUNTYNAME == "高雄市") {
+                                curScale = 4.3
+                                dx += 40
                             }
                             const [x, y] = [path.centroid(vm.curFeature[curIndex])[0] - 180 - dx, path.centroid(vm.curFeature[curIndex])[1] - 80 - dy]
                             //console.log(d.properties.COUNTYNAME)
                             d3.event.stopPropagation()
-                            svg.transition().duration(2500).call(zoom.transform, d3.zoomIdentity.translate(50, 50).scale(curScale).translate(-x, -y))
+                            svg.transition().duration(1500).call(zoom.transform, d3.zoomIdentity.translate(50, 50).scale(curScale).translate(-x, -y))
                             vm.isZoomed = true
                             vm.selectedCounty = d.properties.COUNTYNAME
                             vm.draw_map(vm.taiwanCounty, vm.taiwanArea)
+                            d3.select('g.counties').selectAll('path')
+                                .transition()
+                                .duration(1000)
+                                .style('fill', '#b3b3b3')
+                            d3.select("g.areas").selectAll('path')
+                                .style('opacity', function (a) {
+                                    if (a.properties.COUNTYNAME == d.properties.COUNTYNAME) {
+                                        return 1
+                                    }
+                                    return 0
+                                })
                             vm.draw_area_mountain(vm.taiwanArea)
                             vm.mountain.selectAll("path").remove()
                             vm.mountain.selectAll("text").remove()
@@ -301,6 +365,8 @@ let vm = new Vue({
                     .enter()
                     .append("path")
                     .attr("d", path)
+                    .style('fill', '#5F7470')
+                    .style('opacity', 0)
 
                 d3.select("path.area-borders").attr(
                     "d",
@@ -331,7 +397,7 @@ let vm = new Vue({
             borders = d3.select("path.county-borders")
             areaborders = d3.select("path.area-borders")
 
-            svg.call(zoom)
+            //svg.call(zoom)
 
             function zoomed() {
                 counties.attr("transform", d3.event.transform)
@@ -492,6 +558,7 @@ let vm = new Vue({
                 .data(this.curFeature)
                 .enter()
                 .append("text")
+                .style('pointer-events', 'none')
                 .attr("x", function (d) {
                     var dx = 0
                     if (d.properties.COUNTYNAME == "新北市") {
@@ -521,19 +588,24 @@ let vm = new Vue({
                 })
                 .attr("text-anchor", "middle")
                 .attr("font-size", "14px")
-                .style("stroke", "black")
-                .style("font-weight", "100")
+                .style('fill', '#DC851F')
+                .style("stroke", "none")
+                .style('background', 'gray')
+                .style("font-weight", "600")
                 .text((d) => {
+                    return d.properties.COUNTYNAME + " " + this.curData[d.properties.COUNTYNAME].counts[this.curYear].toLocaleString()
+                }).style('opacity', function (d) {
                     if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(d.properties.COUNTYNAME)) {
-                        return d.properties.COUNTYNAME + " " + this.curData[d.properties.COUNTYNAME].counts[this.curYear].toLocaleString()
+                        return '100%'
                     }
-                    return ""
+                    return '0%'
                 })
 
             let tooltip = d3.select("body").append("div").attr("class", "tooltip")
 
             this.mountain
                 .selectAll("path")
+                .style('pointer-events', 'none')
                 .on("mouseover", function () {
                     d3.select(this).attr("city", function (d) {
                         label = d.properties.COUNTYNAME + "</br>成交量：" + vm.curData[d.properties.COUNTYNAME].counts[vm.curYear].toLocaleString()
@@ -555,8 +627,7 @@ let vm = new Vue({
                 return 105 + d
             })
 
-            var sliderTime = d3
-                .sliderBottom()
+            var sliderTime = d3.sliderBottom()
                 .min(d3.min(dataTime))
                 .max(d3.max(dataTime))
                 .width(200)
@@ -565,7 +636,7 @@ let vm = new Vue({
                 .tickValues(dataTime)
                 .default(105)
                 .on("onchange", (val) => {
-                    d3.select("h1#value-time").text(d3.format("")(val))
+                    d3.select("h1#value-time").text(d3.format("")(val) + '年')
                     // console.log(d3.timeFormat("%Y")(val))
                     this.curYear = val + 1911
                     this.update(mapData)
@@ -583,7 +654,7 @@ let vm = new Vue({
 
             gTime.call(sliderTime)
 
-            d3.select("h1#value-time").text(d3.format("")(sliderTime.value()))
+            d3.select("h1#value-time").text(d3.format("")(sliderTime.value()) + '年')
         },
         button(mapData) {
             var button = d3.select("div.button_div")
@@ -639,6 +710,10 @@ let vm = new Vue({
                     d3.select("path.area-borders").attr("d", "")
                     d3.select("g.areas").selectAll("path").remove()
                     d3.select("g.area-mountain").selectAll("path").remove()
+                    d3.select('g.counties').selectAll('path')
+                        .transition()
+                        .duration(1000)
+                        .style('fill', '#5F7470')
                     vm.isZoomed = false
                     vm.draw_mountain(vm.taiwanCounty, vm.rentSiteData, vm.realData)
                     vm.draw_map(vm.taiwanCounty, vm.taiwanArea)

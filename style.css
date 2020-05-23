@@ -1,38 +1,45 @@
 body {
-    background-color: #bfd7f5;
+    background-color: #e0e2db;
     font-family: Microsoft JhengHei;
 }
 #map {
     text-align: center;
 }
 .counties {
-    fill: #b3b3b3;
+    fill: #5F7470;
 }
+/*
 .counties :hover {
-    fill: #797979;
+    fill: #434A42;
     transition: 0.5s;
+}
+*/
+.county-path.over{
+    fill: #434A42;
 }
 .areas{
     fill: #b3b3b3;
+    opacity: 0%;
 }
 .areas :hover {
     fill: #797979;
     transition: 0.5s;
 }
 .mountain {
-    stroke: rgb(223, 23, 16);
+    stroke: #DC851F;
 }
 .area-mountain {
-    stroke: rgb(223, 23, 16);
+    stroke: #DC851F;
+    stroke-width: 0.2px;
 }
 .area-borders{
     fill: none;
     stroke: rgb(148, 148, 148);
-    stroke-width: 0.5px;
+    stroke-width: 0.1px;
 }
 .county-borders {
     fill: none;
-    stroke: #fff;
+    stroke: #889696;
     stroke-width: 0.5px;
 }
 .button_div {
@@ -45,7 +52,8 @@ body {
     border: none;
     outline: none;
     padding: 10px 16px;
-    background-color: #f1f1f1;
+    background-color: #434A42;
+    color: #F9F9F9;
     cursor: pointer;
     font-size: 18px;
     font-family: Microsoft JhengHei;
@@ -54,8 +62,8 @@ body {
 /* Style the active class, and buttons on mouse-over */
 .active,
 .button:hover {
-    background-color: #666;
-    color: white;
+    background-color: #B8BDB5;
+    color: #F9F9F9;
 }
 
 .tooltip {
@@ -74,21 +82,40 @@ body {
 
 /* rent site */
 .stop-top-rentsite {
-    stop-color: #7c0808; /* Indigo */
+    stop-color: #F7C59F; /* Indigo */
 }
 .stop-bottom-rentsite {
-    stop-color: #ffffff; /* Teal */
+    stop-color: #F7C59F; /* Teal */
+    stop-opacity: 70%;
 }
 .filled-rentsite {
     fill: url(#rentSiteGradient);
 }
 /* real */
 .stop-top-real {
-    stop-color: #f55491; /* Indigo */
+    stop-color: #F7C59F; /* Indigo */
 }
 .stop-bottom-real {
-    stop-color: #ffffff; /* Teal */
+    stop-color: #F7C59F; /* Teal */
+    stop-opacity: 70%;
 }
 .filled-real {
     fill: url(#realGradient);
 }
+
+.track-inset{
+    stroke: #B8BDB5;
+}
+.track{
+    stroke: none;
+}
+
+.track-overlay :hover{
+    stroke: #5F7470;
+}
+
+.parameter-value path{
+    stroke: none;
+    fill: #B8BDB5;
+}
+
