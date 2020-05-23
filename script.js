@@ -21,19 +21,21 @@ let vm = new Vue({
         selectedCounty: [],
     },
     mounted() {
-        fetch("./COUNTY_MOI_1081121.json", { mode: "no-cors" })
+        fetch("./COUNTY_MOI_1081121.json")
             .then((res) => res.json())
-            .then((result) => {
-                this.taiwanCounty = result
-                fetch("./TOWN_MOI_1090324.json", { mode: "no-cors" })
+            .then((result1) => {
+                this.taiwanCounty = result1
+                fetch("./TOWN_MOI_1090324.json")
                     .then((res) => res.json())
-                    .then((result) => {
-                        this.taiwanArea = result
+                    .then((result2) => {
+                        this.taiwanArea = result2
                     })
-                fetch("./data/output591Merged.json", { mode: "no-cors" })
+                fetch("./data/output591Merged.json")
                     .then((res) => res.json())
-                    .then((result) => {
-                        this.rentSiteData = result
+                    .then((result3) => {
+                        console.log(result3)
+                        this.rentSiteData = result3
+                        //console.log(this.rentSiteData)
                         Promise.all(
                             ["./data/105.csv", "./data/106.csv", "./data/107.csv", "./data/108.csv", "./data/109.csv"].map(function (url) {
                                 return fetch(url)
@@ -46,17 +48,29 @@ let vm = new Vue({
                             })
                         ).then((value) => {
                             this.realData = value
+                            console.log(this.rentSiteData)
                             this.rentSiteSum = {}
                             for (key in this.rentSiteData) {
-                                let cur = this.rentSiteData[key]
-
+                                var cur = this.rentSiteData[key]
                                 if (cur.city in this.rentSiteSum) {
+                                    //console.log(cur.city)
                                     for (key2 in cur.counts) {
-                                        if (key2 in this.rentSiteSum[cur.city].counts) this.rentSiteSum[cur.city].counts[key2] += cur.counts[key2]
-                                        else this.rentSiteSum[cur.city].counts[key2] = cur.counts[key2]
+                                        //console.log(key2)
+                                        
+                                        if (key2 in this.rentSiteSum[cur.city].counts) {
+                                            //console.log(cur.counts[key2])
+                                            this.rentSiteSum[cur.city].counts[key2] += cur.counts[key2]
+                                        }
+                                        else{
+                                            this.rentSiteSum[cur.city].counts[key2] = JSON.parse(JSON.stringify(cur.counts[key2]))
+                                        } 
+                                        //console.log(this.rentSiteSum[cur.city].counts[key2])
                                     }
+                                    
                                 } else {
-                                    this.rentSiteSum[cur.city] = { counts: cur.counts }
+                                    if(typeof cur.counts == "undefined")
+                                        console.log(cur.counts)
+                                    this.rentSiteSum[cur.city] = { counts: JSON.parse(JSON.stringify(cur.counts)) }
                                 }
                             }
                             console.log(this.rentSiteSum)
@@ -83,9 +97,12 @@ let vm = new Vue({
                             this.rentSiteSix = {}
                             for (key in this.rentSiteData) {
                                 let cur = this.rentSiteData[key]
+                                //console.log(cur)
                                 if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(cur.city)) {
-                                    if (typeof this.rentSiteSix[cur.city] == "undefined")
+                                    if (typeof this.rentSiteSix[cur.city] == "undefined"){
                                         this.rentSiteSix[cur.city] = [{ area: cur.area, counts: cur.counts }]
+                                        //console.log(cur, cur.area, cur.counts)
+                                    }
                                     else this.rentSiteSix[cur.city].push({ area: cur.area, counts: cur.counts })
                                 }
                             }
@@ -240,7 +257,7 @@ let vm = new Vue({
                         return path.centroid(d)[1] - height + dy
                     })
                     .text((d) => {
-                        console.log(this.curData)
+                        //console.log(this.curData)
                         return d.properties.COUNTYNAME + " " + this.curData[d.properties.COUNTYNAME].counts[this.curYear].toLocaleString()
                     })
                     .style('opacity', function (d) {
@@ -318,12 +335,16 @@ let vm = new Vue({
                             if (d.properties.COUNTYNAME == "臺北市") {
                                 curScale = 7
                                 dx += -60
-                                dy += 0
+                                dy += -40
                             }
                             if (d.properties.COUNTYNAME == "新北市") {
                                 curScale = 4.0
                                 dx += 40
-                                dy += 40
+                                dy += 20
+                            }
+                            if (d.properties.COUNTYNAME == "桃園市") {
+                                dx += -20
+                                dy += -20
                             }
                             if (d.properties.COUNTYNAME == "臺中市") {
                                 curScale = 4.8
