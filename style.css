@@ -22,6 +22,9 @@ body {
 .mountain {
     stroke: rgb(223, 23, 16);
 }
+.area-mountain {
+    stroke: rgb(223, 23, 16);
+}
 .area-borders{
     fill: none;
     stroke: rgb(148, 148, 148);
