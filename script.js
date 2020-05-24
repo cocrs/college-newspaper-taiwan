@@ -98,7 +98,7 @@ let vm = new Vue({
                             for (key in this.rentSiteData) {
                                 let cur = this.rentSiteData[key]
                                 //console.log(cur)
-                                if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(cur.city)) {
+                                if (["台北市", "新北市", "桃園市", "台中市", "台南市", "高雄市"].includes(cur.city)) {
                                     if (typeof this.rentSiteSix[cur.city] == "undefined") {
                                         this.rentSiteSix[cur.city] = [{ area: cur.area, counts: cur.counts }]
                                         //console.log(cur, cur.area, cur.counts)
@@ -112,7 +112,7 @@ let vm = new Vue({
                             this.realData.forEach((year, index) => {
                                 //console.log(this.realData[index])
                                 year.forEach((cur) => {
-                                    if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(cur.city)) {
+                                    if (["台北市", "新北市", "桃園市", "台中市", "台南市", "高雄市"].includes(cur.city)) {
 
                                         if (typeof this.realSix[cur.city] == "undefined") {
                                             console.log(cur.area)
@@ -192,7 +192,7 @@ let vm = new Vue({
                                 height = 0
                                 console.log(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts)
                             } else {
-                                if (d.properties.COUNTYNAME == '臺北市' || d.properties.COUNTYNAME == '桃園市' || d.properties.COUNTYNAME == '臺中市') {
+                                if (d.properties.COUNTYNAME == '台北市' || d.properties.COUNTYNAME == '桃園市' || d.properties.COUNTYNAME == '台中市') {
                                     height = linear(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts[this.curYear]) * 2
                                 } else {
                                     height = linear(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts[this.curYear]) * 5
@@ -247,10 +247,10 @@ let vm = new Vue({
                         if (d.properties.COUNTYNAME == "新北市") {
                             dx += 40
                         }
-                        if (d.properties.COUNTYNAME == "臺北市") {
+                        if (d.properties.COUNTYNAME == "台北市") {
                             dx -= 40
                         }
-                        if (d.properties.COUNTYNAME == "臺南市") {
+                        if (d.properties.COUNTYNAME == "台南市") {
                             dx -= 25
                         }
                         if (d.properties.COUNTYNAME == "高雄市") {
@@ -274,7 +274,7 @@ let vm = new Vue({
                         return d.properties.COUNTYNAME + " " + this.curData[d.properties.COUNTYNAME].counts[this.curYear].toLocaleString()
                     })
                     .style('opacity', function (d) {
-                        if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(d.properties.COUNTYNAME)) {
+                        if (["台北市", "新北市", "桃園市", "台中市", "台南市", "高雄市"].includes(d.properties.COUNTYNAME)) {
                             return '100%'
                         }
                         return '0%'
@@ -295,7 +295,7 @@ let vm = new Vue({
                 .attr("d", path)
                 .attr('class', 'county-path')
                 .on('mouseover', function (a) {
-                    if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(a.properties.COUNTYNAME)) {
+                    if (["台北市", "新北市", "桃園市", "台中市", "台南市", "高雄市"].includes(a.properties.COUNTYNAME)) {
                         d3.select(this).transition().style('fill', '#434A42')
                     }
                     vm.mountain.selectAll('text')
@@ -322,13 +322,13 @@ let vm = new Vue({
                         .style('opacity', 0)
                         .transition()
                         .style('opacity', function (m) {
-                            if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(m.properties.COUNTYNAME)) {
+                            if (["台北市", "新北市", "桃園市", "台中市", "台南市", "高雄市"].includes(m.properties.COUNTYNAME)) {
                                 return 1
                             }
                             return 0
                         })
                         .style('display', function (m) {
-                            if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(m.properties.COUNTYNAME)) {
+                            if (["台北市", "新北市", "桃園市", "台中市", "台南市", "高雄市"].includes(m.properties.COUNTYNAME)) {
                                 return 'block'
                             }
                             return 'none'
@@ -336,7 +336,7 @@ let vm = new Vue({
                 })
                 .on("click", function () {
                     d3.select(this).attr("city", function (d) {
-                        if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(d.properties.COUNTYNAME)) {
+                        if (["台北市", "新北市", "桃園市", "台中市", "台南市", "高雄市"].includes(d.properties.COUNTYNAME)) {
                             var curIndex
                             for (i = 0; i < vm.curFeature.length; i++) {
                                 if (d.properties.COUNTYNAME == vm.curFeature[i].properties.COUNTYNAME) curIndex = i
@@ -345,7 +345,7 @@ let vm = new Vue({
                             dx = 0
                             dy = 0
                             curScale = 5.5
-                            if (d.properties.COUNTYNAME == "臺北市") {
+                            if (d.properties.COUNTYNAME == "台北市") {
                                 curScale = 7
                                 dx += -60
                                 dy += -0
@@ -360,10 +360,10 @@ let vm = new Vue({
                                 dx += -20
                                 dy += 10
                             }
-                            if (d.properties.COUNTYNAME == "臺南市") {
+                            if (d.properties.COUNTYNAME == "台南市") {
                                 dx += -20
                             }
-                            if (d.properties.COUNTYNAME == "臺中市") {
+                            if (d.properties.COUNTYNAME == "台中市") {
                                 curScale = 4.8
                             }
                             if (d.properties.COUNTYNAME == "高雄市") {
@@ -607,10 +607,10 @@ let vm = new Vue({
                     if (d.properties.COUNTYNAME == "新北市") {
                         dx += 40
                     }
-                    if (d.properties.COUNTYNAME == "臺北市") {
+                    if (d.properties.COUNTYNAME == "台北市") {
                         dx -= 40
                     }
-                    if (d.properties.COUNTYNAME == "臺南市") {
+                    if (d.properties.COUNTYNAME == "台南市") {
                         dx -= 25
                     }
                     if (d.properties.COUNTYNAME == "高雄市") {
@@ -638,7 +638,7 @@ let vm = new Vue({
                 .text((d) => {
                     return d.properties.COUNTYNAME + " " + this.curData[d.properties.COUNTYNAME].counts[this.curYear].toLocaleString()
                 }).style('opacity', function (d) {
-                    if (["臺北市", "新北市", "桃園市", "臺中市", "臺南市", "高雄市"].includes(d.properties.COUNTYNAME)) {
+                    if (["台北市", "新北市", "桃園市", "台中市", "台南市", "高雄市"].includes(d.properties.COUNTYNAME)) {
                         return '100%'
                     }
                     return '0%'

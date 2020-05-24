@@ -128,3 +128,11 @@ body {
     width: 508px;
     pointer-events: none;
 }
+
+#real{
+    border-radius: 0px 3px 3px 0px;
+}
+
+#rent{
+    border-radius: 3px 0px 0px 3px;
+}
