@@ -192,7 +192,7 @@ let vm = new Vue({
                                 height = 0
                                 console.log(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts)
                             } else {
-                                if (d.properties.COUNTYNAME == '臺北市') {
+                                if (d.properties.COUNTYNAME == '臺北市' || d.properties.COUNTYNAME == '桃園市' || d.properties.COUNTYNAME == '臺中市') {
                                     height = linear(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts[this.curYear]) * 2
                                 } else {
                                     height = linear(this.curAreaData[d.properties.COUNTYNAME][curIndex].counts[this.curYear]) * 5
@@ -685,7 +685,7 @@ let vm = new Vue({
                     this.update(mapData)
                 })
 
-            d3.select("div.row_align-items-center").style("position", "absolute").style("left", "150px").style("top", "476px")
+            d3.select("div.row_align-items-center").style("position", "absolute").style("left", "121px").style("top", "476px")
 
             var gTime = d3
                 .select("div#slider-time")
@@ -742,7 +742,8 @@ let vm = new Vue({
                 .attr("id", "top")
                 .text("回到最上層")
                 .style("position", "absolute")
-                .style("top", "100px")
+                .style("top", "66px")
+                .style('left', '145px')
                 .style("border-radius", "3px")
                 .classed("button", true)
                 .on("click", () => {

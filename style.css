@@ -119,3 +119,12 @@ body {
     fill: #B8BDB5;
 }
 
+
+#info {
+    display: block;
+    position: absolute;
+    top: 130px;
+    left: 143px;
+    width: 508px;
+    pointer-events: none;
+}
