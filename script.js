@@ -157,7 +157,7 @@ let vm = new Vue({
     },
     methods: {
         update() {
-            let projection = d3.geoMercator().center([118, 25]).scale(8500)
+            let projection = d3.geoMercator().center([119, 25]).scale(8500)
             let path = d3.geoPath(projection)
             var lineGenerator = d3.line()
             let linear = d3.scaleLinear().range([0, 200]).domain([0, this.max])
@@ -245,16 +245,16 @@ let vm = new Vue({
                     .attr("x", function (d) {
                         var dx = 0
                         if (d.properties.COUNTYNAME == "新北市") {
-                            dx += 40
+                            dx += 50
                         }
                         if (d.properties.COUNTYNAME == "台北市") {
-                            dx -= 40
+                            dx -= 50
                         }
                         if (d.properties.COUNTYNAME == "台南市") {
-                            dx -= 25
+                            dx -= 35
                         }
                         if (d.properties.COUNTYNAME == "高雄市") {
-                            dx += 25
+                            dx += 35
                         }
                         if (d.properties.COUNTYNAME == "桃園市") {
                             dx -= 15
@@ -271,7 +271,7 @@ let vm = new Vue({
                     })
                     .text((d) => {
                         //console.log(this.curData)
-                        return d.properties.COUNTYNAME + " " + this.curData[d.properties.COUNTYNAME].counts[this.curYear].toLocaleString()
+                        return d.properties.COUNTYNAME + " " + this.curData[d.properties.COUNTYNAME].counts[this.curYear].toLocaleString() + '件'
                     })
                     .style('opacity', function (d) {
                         if (["台北市", "新北市", "桃園市", "台中市", "台南市", "高雄市"].includes(d.properties.COUNTYNAME)) {
@@ -284,7 +284,7 @@ let vm = new Vue({
         draw_map(mapData, areaData) {
             //console.log("here", mapData)
             this.curFeature = topojson.feature(mapData, mapData.objects[Object.keys(mapData.objects)[0]]).features
-            let projection = d3.geoMercator().center([118, 25]).scale(8500)
+            let projection = d3.geoMercator().center([119, 25]).scale(8500)
             let path = d3.geoPath(projection)
 
             d3.select("g.counties")
@@ -342,7 +342,7 @@ let vm = new Vue({
                                 if (d.properties.COUNTYNAME == vm.curFeature[i].properties.COUNTYNAME) curIndex = i
                             }
                             //console.log(curIndex, vm.curFeature[curIndex])
-                            dx = 0
+                            dx = -20
                             dy = 0
                             curScale = 5.5
                             if (d.properties.COUNTYNAME == "台北市") {
@@ -352,7 +352,7 @@ let vm = new Vue({
                             }
                             if (d.properties.COUNTYNAME == "新北市") {
                                 curScale = 4.5
-                                dx += 20
+                                dx += -20
                                 dy += 30
                             }
                             if (d.properties.COUNTYNAME == "桃園市") {
@@ -361,14 +361,15 @@ let vm = new Vue({
                                 dy += 10
                             }
                             if (d.properties.COUNTYNAME == "台南市") {
-                                dx += -20
+                                dx += -50
                             }
                             if (d.properties.COUNTYNAME == "台中市") {
-                                curScale = 4.8
+                                dx += -40
+                                curScale = 4.5
                             }
                             if (d.properties.COUNTYNAME == "高雄市") {
                                 curScale = 4.3
-                                dx += 40
+                                dx += -20
                             }
                             const [x, y] = [path.centroid(vm.curFeature[curIndex])[0] - 180 - dx, path.centroid(vm.curFeature[curIndex])[1] - 80 - dy]
                             //console.log(d.properties.COUNTYNAME)
@@ -448,7 +449,7 @@ let vm = new Vue({
             }
         },
         draw_area_mountain(areaData) {
-            let projection = d3.geoMercator().center([118, 25]).scale(8500)
+            let projection = d3.geoMercator().center([119, 25]).scale(8500)
             let path = d3.geoPath(projection)
             var lineGenerator = d3.line()
             this.curAreaFeature = topojson.feature(areaData, areaData.objects[Object.keys(areaData.objects)[0]]).features
@@ -525,7 +526,7 @@ let vm = new Vue({
         },
         draw_mountain(mapData) {
             let svg = d3.select("svg")
-            let projection = d3.geoMercator().center([118, 25]).scale(8500)
+            let projection = d3.geoMercator().center([119, 25]).scale(8500)
             let path = d3.geoPath(projection)
 
             var svgDefsRentSite = svg.append("defs")
@@ -605,16 +606,16 @@ let vm = new Vue({
                 .attr("x", function (d) {
                     var dx = 0
                     if (d.properties.COUNTYNAME == "新北市") {
-                        dx += 40
+                        dx += 50
                     }
                     if (d.properties.COUNTYNAME == "台北市") {
-                        dx -= 40
+                        dx -= 50
                     }
                     if (d.properties.COUNTYNAME == "台南市") {
-                        dx -= 25
+                        dx -= 35
                     }
                     if (d.properties.COUNTYNAME == "高雄市") {
-                        dx += 25
+                        dx += 35
                     }
                     if (d.properties.COUNTYNAME == "桃園市") {
                         dx -= 15
@@ -636,7 +637,7 @@ let vm = new Vue({
                 .style('background', 'gray')
                 .style("font-weight", "600")
                 .text((d) => {
-                    return d.properties.COUNTYNAME + " " + this.curData[d.properties.COUNTYNAME].counts[this.curYear].toLocaleString()
+                    return d.properties.COUNTYNAME + " " + this.curData[d.properties.COUNTYNAME].counts[this.curYear].toLocaleString() + '件'
                 }).style('opacity', function (d) {
                     if (["台北市", "新北市", "桃園市", "台中市", "台南市", "高雄市"].includes(d.properties.COUNTYNAME)) {
                         return '100%'
@@ -685,7 +686,7 @@ let vm = new Vue({
                     this.update(mapData)
                 })
 
-            d3.select("div.row_align-items-center").style("position", "absolute").style("left", "121px").style("top", "476px")
+            d3.select("div.row_align-items-center").style("position", "absolute").style("left", "42px").style("top", "476px")
 
             var gTime = d3
                 .select("div#slider-time")
@@ -714,6 +715,7 @@ let vm = new Vue({
                     this.update(mapData)
                     button.select("#rent").classed("active", true)
                     button.select("#real").classed("active", false)
+                    d3.select("h2#value-time-type").text('租屋網')
                 })
 
             button
@@ -727,7 +729,10 @@ let vm = new Vue({
                     this.update(mapData)
                     button.select("#real").classed("active", true)
                     button.select("#rent").classed("active", false)
+                    d3.select("h2#value-time-type").text('實價登錄')
                 })
+
+            d3.select("h2#value-time-type").text('租屋網')
 
             const zoom = d3.zoom().scaleExtent([1, 40]).on("zoom", zoomed)
 
@@ -743,7 +748,7 @@ let vm = new Vue({
                 .text("回到最上層")
                 .style("position", "absolute")
                 .style("top", "66px")
-                .style('left', '145px')
+                .style('left', '65px')
                 .style("border-radius", "3px")
                 .classed("button", true)
                 .on("click", () => {

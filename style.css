@@ -43,8 +43,8 @@ body {
     stroke-width: 0.5px;
 }
 .button_div {
-    margin-top: -227px;
-    margin-left: 284px;
+    margin-top: -271px;
+    margin-left: 165px;
 }
 .button {
     position: relative;
@@ -124,7 +124,7 @@ body {
     display: block;
     position: absolute;
     top: 130px;
-    left: 140px;
+    left: 62px;
     width: 508px;
     pointer-events: none;
 }
