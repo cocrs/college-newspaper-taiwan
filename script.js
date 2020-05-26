@@ -686,7 +686,7 @@ let vm = new Vue({
                     this.update(mapData)
                 })
 
-            d3.select("div.row_align-items-center").style("position", "absolute").style("left", "42px").style("top", "476px")
+            d3.select("div.row_align-items-center").style("position", "absolute").style("left", "43px").style("top", "524px")
 
             var gTime = d3
                 .select("div#slider-time")
