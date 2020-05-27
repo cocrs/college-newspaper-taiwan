@@ -352,7 +352,7 @@ let vm = new Vue({
                             }
                             if (d.properties.COUNTYNAME == "新北市") {
                                 curScale = 4.5
-                                dx += -20
+                                dx += -15
                                 dy += 30
                             }
                             if (d.properties.COUNTYNAME == "桃園市") {
@@ -361,15 +361,16 @@ let vm = new Vue({
                                 dy += 10
                             }
                             if (d.properties.COUNTYNAME == "台南市") {
-                                dx += -50
+                                curScale = 5.0
+                                dx += -30
                             }
                             if (d.properties.COUNTYNAME == "台中市") {
-                                dx += -40
-                                curScale = 4.5
+                                dx += -15
+                                curScale = 4.0
                             }
                             if (d.properties.COUNTYNAME == "高雄市") {
-                                curScale = 4.3
-                                dx += -20
+                                curScale = 3.5
+                                dx += 30
                             }
                             const [x, y] = [path.centroid(vm.curFeature[curIndex])[0] - 180 - dx, path.centroid(vm.curFeature[curIndex])[1] - 80 - dy]
                             //console.log(d.properties.COUNTYNAME)
